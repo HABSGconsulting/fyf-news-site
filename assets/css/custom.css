@@ -1,0 +1,52 @@
+/* FundYourFreedom News — custom styles */
+
+.sentiment {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.sentiment-positive { background: #d4edda; color: #155724; }
+.sentiment-negative { background: #f8d7da; color: #721c24; }
+.sentiment-neutral  { background: #e2e3e5; color: #383d41; }
+.sentiment-watch    { background: #fff3cd; color: #856404; }
+
+.persona {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  font-style: italic;
+}
+
+.comic-strip img {
+  width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.audio-player {
+  background: var(--code-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+.audio-player audio { width: 100%; margin-top: 0.5rem; }
+
+.learn-links, .source-links {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.difficulty {
+  font-size: 0.75rem;
+  color: var(--secondary);
+  margin-left: 0.5rem;
+}
+
+.post-card {
+  padding: 1.2rem 0;
+  border-bottom: 1px solid var(--border);
+}

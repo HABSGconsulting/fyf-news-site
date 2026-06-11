@@ -1,0 +1,50 @@
+baseURL: https://news.fundyourfreedom.in
+languageCode: en-in
+title: FundYourFreedom News
+theme: PaperMod
+
+paginate: 20
+
+params:
+  homeInfoParams:
+    Title: "What today's financial news means for your money"
+    Content: "Investor-framed analysis of Indian personal finance events, six times a day."
+  ShowReadingTime: false
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: false
+  hideMeta: false
+  dateFormat: "2 Jan 2006"
+  defaultTheme: light
+  disableThemeToggle: false
+  ShowToc: false
+
+menu:
+  main:
+    - name: Blog
+      url: https://blog.fundyourfreedom.in
+      weight: 10
+    - name: Learn
+      url: https://learn.fundyourfreedom.in
+      weight: 20
+
+languages:
+  en:
+    languageName: English
+    weight: 1
+  hi:
+    languageName: "हिंदी"
+    weight: 2
+    contentDir: content
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

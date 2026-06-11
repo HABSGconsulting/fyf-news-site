@@ -1,0 +1,20 @@
+{{ define "main" }}
+<div class="posts-list">
+  {{ $cutoff := now.AddDate 0 -3 0 }}
+  {{ range (where .Site.RegularPages "Section" "news") }}
+    {{ if .Date.After $cutoff }}
+    <article class="post-card">
+      {{ with .Params.sentiment }}
+      <span class="sentiment sentiment-{{ . }}">{{ . }}</span>
+      {{ end }}
+      <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
+      <div class="post-meta">
+        {{ .Date.Format "2 Jan 2006" }}
+        {{ with .Params.primary_persona }}&nbsp;&middot;&nbsp;{{ . }}{{ end }}
+      </div>
+      {{ with .Summary }}<p>{{ . }}</p>{{ end }}
+    </article>
+    {{ end }}
+  {{ end }}
+</div>
+{{ end }}

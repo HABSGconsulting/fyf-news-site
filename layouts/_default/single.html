@@ -1,0 +1,62 @@
+{{ define "main" }}
+<article class="post-single">
+  <header class="post-header">
+    {{ with .Params.sentiment }}
+    <span class="sentiment sentiment-{{ . }}">{{ . | upper }}</span>
+    {{ end }}
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="post-meta">
+      {{ .Date.Format "2 Jan 2006, 3:04 PM" }}
+      {{ with .Params.primary_persona }}
+      &nbsp;&middot;&nbsp; <span class="persona">{{ . }}</span>
+      {{ end }}
+      {{ with .Params.editorial_impact_score }}
+      &nbsp;&middot;&nbsp; Impact: {{ . }}/10
+      {{ end }}
+    </div>
+  </header>
+
+  {{ with .Params.comic_url }}
+  <div class="comic-strip">
+    <img src="{{ . }}" alt="Comic illustration for {{ $.Title }}" loading="lazy" />
+  </div>
+  {{ end }}
+
+  <div class="post-content">
+    {{ .Content }}
+  </div>
+
+  {{ with .Params.audio_url }}
+  <div class="audio-player">
+    <p><strong>🎧 Listen to this post</strong></p>
+    <audio controls preload="none">
+      <source src="{{ . }}" type="audio/mpeg">
+    </audio>
+  </div>
+  {{ end }}
+
+  {{ with .Params.learn_links }}
+  <div class="learn-links">
+    <h3>Learn More</h3>
+    <ul>
+    {{ range . }}
+      <li><a href="https://learn.fundyourfreedom.in/{{ .slug }}">{{ .title }}</a>
+      <span class="difficulty">{{ .difficulty }}</span></li>
+    {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+
+  {{ with .Params.source_links }}
+  <div class="source-links">
+    <h3>Sources</h3>
+    <ul>
+    {{ range . }}
+      <li><a href="{{ .url }}" target="_blank" rel="noopener">{{ .label }}</a></li>
+    {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+
+</article>
+{{ end }}
