@@ -42,7 +42,19 @@ body, h1, h2, h3, p, span, a, li {
     <div class="fyf-post-meta-top">
       <span class="fyf-sentiment-badge sentiment-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
       <span class="fyf-score-badge">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
+
+      {{- if .Translations }}
+      <div class="fyf-lang-switcher">
+        {{- range .Translations }}
+        <a href="{{ .Permalink }}" class="fyf-lang-btn" hreflang="{{ .Language.Lang }}"
+           title="{{ if eq .Language.Lang "hi" }}हिंदी में पढ़ें{{ else }}Read in English{{ end }}">
+          {{ if eq .Language.Lang "hi" }}हि{{ else }}EN{{ end }}
+        </a>
+        {{- end }}
+      </div>
+      {{- end }}
     </div>
+
     <h1 class="fyf-post-title">{{ .Title }}</h1>
     <div class="fyf-post-meta-row">
       <span>{{ .Date.Format "2 Jan 2006, 3:04 PM" }}</span>
@@ -86,13 +98,25 @@ body, h1, h2, h3, p, span, a, li {
 .fyf-post-header.sentiment-neutral  { border-left-color: #94a3b8; }
 .fyf-post-header.sentiment-watch    { border-left-color: #f59e0b; }
 
-.fyf-post-meta-top { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
+.fyf-post-meta-top { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; }
 .fyf-sentiment-badge { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.6rem; border-radius: 99px; background: var(--code-bg); }
 .fyf-sentiment-badge.sentiment-positive { color: #16a34a; }
 .fyf-sentiment-badge.sentiment-negative { color: #dc2626; }
 .fyf-sentiment-badge.sentiment-neutral  { color: #64748b; }
 .fyf-sentiment-badge.sentiment-watch    { color: #d97706; }
 .fyf-score-badge { font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px; background: var(--code-bg); color: var(--secondary); }
+
+/* Language switcher */
+.fyf-lang-switcher { margin-left: auto; display: flex; gap: 0.25rem; }
+.fyf-lang-btn {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem; border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--secondary); text-decoration: none;
+  background: var(--code-bg);
+  transition: background 0.15s, color 0.15s;
+}
+.fyf-lang-btn:hover { background: var(--primary); color: var(--theme); }
 
 .fyf-post-title { font-size: 1.6rem; font-weight: 700; line-height: 1.35; margin: 0.25rem 0 0.6rem 0; color: var(--primary); }
 .fyf-post-meta-row { font-size: 0.8rem; color: var(--secondary); display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center; text-transform: capitalize; }
