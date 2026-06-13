@@ -36,10 +36,22 @@ languages:
   en:
     languageName: English
     weight: 1
+    params:
+      mainSections:
+        - news
+      homeInfoParams:
+        Title: "What today's financial news means for your money"
+        Content: "Investor-framed analysis of Indian personal finance events, six times a day."
   hi:
-    languageName: "\u0939\u093f\u0902\u0926\u0940"
+    languageName: "हिंदी"
     weight: 2
     contentDir: content
+    params:
+      mainSections:
+        - news
+      homeInfoParams:
+        Title: "आज की वित्तीय खबरें आपके पैसे के लिए क्या मायने रखती हैं"
+        Content: "भारतीय पर्सनल फाइनेंस की निवेशक-केंद्रित विश्लेषण, दिन में छह बार।"
 
 outputs:
   home:

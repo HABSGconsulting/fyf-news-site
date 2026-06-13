@@ -1,15 +1,24 @@
 {{- define "main" }}
+{{- $isHindi := eq site.Language.Lang "hi" }}
 {{- $allPosts := slice }}
 {{- range where site.RegularPages "Section" "news" }}
-  {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
-    {{- $allPosts = $allPosts | append . }}
+  {{- if $isHindi }}
+    {{- if strings.HasSuffix .File.BaseFileName ".hi" }}
+      {{- $allPosts = $allPosts | append . }}
+    {{- end }}
+  {{- else }}
+    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
+      {{- $allPosts = $allPosts | append . }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $sorted := sort $allPosts "Date" "desc" }}
 
 <div class="fyf-list-wrap">
   {{- if not $sorted }}
-    <p style="color:var(--secondary);padding:2rem 0">No posts yet. Check back soon.</p>
+    <p style="color:var(--secondary);padding:2rem 0">
+      {{- if $isHindi }}अभी कोई पोस्ट नहीं है। जल्द वापस देखें।{{- else }}No posts yet. Check back soon.{{- end }}
+    </p>
   {{- else }}
     {{- $currentDay := "" }}
     {{- range $sorted }}
