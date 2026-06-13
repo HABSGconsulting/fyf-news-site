@@ -5,34 +5,37 @@
     {{- $allPosts = $allPosts | append . }}
   {{- end }}
 {{- end }}
-{{- $grouped := $allPosts.GroupByDate "2006-01-02" }}
+{{- $sorted := sort $allPosts "Date" "desc" }}
 
 <div class="fyf-list-wrap">
-  {{- if not $grouped }}
+  {{- if not $sorted }}
     <p style="color:var(--secondary);padding:2rem 0">No posts yet. Check back soon.</p>
   {{- else }}
-    {{- range $grouped }}
-    <div class="fyf-day-group">
-      <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" }}</div>
-      <div class="fyf-cards">
-        {{- range .Pages }}
-          {{- $sentiment := .Params.sentiment | default "neutral" }}
-          {{- $score    := .Params.editorial_impact_score | default 0 }}
-          <a class="fyf-card sentiment-{{ $sentiment }}" href="{{ .Permalink }}">
-            <div class="fyf-card-top">
-              <span class="fyf-persona">{{ .Params.primary_persona }}</span>
-              <span class="fyf-score">{{ $score }}/10</span>
-            </div>
-            <h2 class="fyf-card-title">{{ .Title }}</h2>
-            <div class="fyf-card-meta">
-              {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
-              {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
-            </div>
-          </a>
-        {{- end }}
-      </div>
-    </div>
+    {{- $currentDay := "" }}
+    {{- range $sorted }}
+      {{- $day := .Date | time.Format "2006-01-02" }}
+      {{- if ne $day $currentDay }}
+        {{- if ne $currentDay "" }}</div></div>{{- end }}
+        <div class="fyf-day-group">
+          <div class="fyf-day-label">{{ .Date | time.Format "Monday, 2 January 2006" }}</div>
+          <div class="fyf-cards">
+        {{- $currentDay = $day }}
+      {{- end }}
+      {{- $sentiment := .Params.sentiment | default "neutral" }}
+      {{- $score    := .Params.editorial_impact_score | default 0 }}
+      <a class="fyf-card sentiment-{{ $sentiment }}" href="{{ .Permalink }}">
+        <div class="fyf-card-top">
+          <span class="fyf-persona">{{ .Params.primary_persona }}</span>
+          <span class="fyf-score">{{ $score }}/10</span>
+        </div>
+        <h2 class="fyf-card-title">{{ .Title }}</h2>
+        <div class="fyf-card-meta">
+          {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
+          {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
+        </div>
+      </a>
     {{- end }}
+    {{- if ne $currentDay "" }}</div></div>{{- end }}
   {{- end }}
 </div>
 
