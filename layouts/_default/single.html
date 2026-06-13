@@ -4,75 +4,56 @@
 {{- $sentiment := $params.sentiment | default "neutral" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- $sentimentLabel := dict
-  "positive" "Positive"
-  "negative" "Negative"
-  "neutral"  "Neutral"
-  "watch"    "Watch"
-}}
-{{- $sentimentLabelHi := dict
-  "positive" "सकारात्मक"
-  "negative" "नकारात्मक"
-  "neutral"  "तटस्थ"
-  "watch"    "सावधान"
-}}
-{{- $sentimentIcon := dict
-  "positive" "↗️"
-  "negative" "↘️"
-  "neutral"  "→"
-  "watch"    "⚠️"
-}}
+{{- $sentimentLabel := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
+{{- $sentimentLabelHi := dict "positive" "सकारात्मक" "negative" "नकारात्मक" "neutral" "तटस्थ" "watch" "सावधान" }}
+{{- $sentimentIcon := dict "positive" "↗️" "negative" "↘️" "neutral" "→" "watch" "⚠️" }}
 {{- $icon  := index $sentimentIcon $sentiment | default "→" }}
 {{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabel $sentiment | default ($sentiment | title)) }}
 
-<article class="fyf-single{{ if $isHindi }} fyf-hindi{{ end }}">
+<article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}">
 
-  <header class="fyf-post-header">
-    <!-- Top meta row: sentiment · score · translation -->
-    <div class="fyf-post-meta-top">
-      <span class="fyf-sentiment-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
-      <span class="fyf-meta-sep">·</span>
-      <span class="fyf-score-badge">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
+  <header class="fyf-post-header s-{{ $sentiment }}">
+
+    <div class="fyf-post-topbar">
+      <span class="fyf-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
+      <span class="fyf-badge fyf-badge-score">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
       {{- if .Translations }}
-      <div class="fyf-lang-switcher">
+      <div class="fyf-lang-switch">
         {{- range .Translations }}
-        <a href="{{ .Permalink }}" class="fyf-lang-btn" hreflang="{{ .Language.Lang }}"
-           title="{{ if eq .Language.Lang `hi` }}हिंदी में पढ़ें{{ else }}Read in English{{ end }}">
-          {{ if eq .Language.Lang "hi" }}🇮🇳 हिंदी{{ else }}🇬🇧 English{{ end }}
+        <a href="{{ .Permalink }}" class="fyf-lang-btn" hreflang="{{ .Language.Lang }}">
+          {{ if eq .Language.Lang "hi" }}🇮🇳 हिंदी में पढ़ें{{ else }}🇬🇧 Read in English{{ end }}
         </a>
         {{- end }}
       </div>
       {{- end }}
     </div>
 
-    <!-- Title -->
     <h1 class="fyf-post-title">{{ .Title }}</h1>
 
-    <!-- Sub-meta: date · persona · category · horizon -->
-    <div class="fyf-post-meta-row">
-      <span class="fyf-meta-time">{{ .Date.Format "2 Jan 2006" }} &middot; {{ .Date.Format "3:04 PM" }} IST</span>
-      {{- if $params.primary_persona }}<span class="fyf-dot">·</span><span>{{ $params.primary_persona }}</span>{{- end }}
-      {{- if $params.category }}<span class="fyf-dot">·</span><span>{{ $params.category }}</span>{{- end }}
-      {{- if $params.impact_horizon }}<span class="fyf-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
+    <div class="fyf-post-byline">
+      <span>{{ .Date.Format "2 January 2006" }}</span>
+      <span class="fyf-sep">·</span>
+      <span>{{ .Date.Format "3:04 PM" }} IST</span>
+      {{- if $params.primary_persona }}<span class="fyf-sep">·</span><span>{{ $params.primary_persona }}</span>{{- end }}
+      {{- if $params.category }}<span class="fyf-sep">·</span><span>{{ $params.category }}</span>{{- end }}
+      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
+
   </header>
 
-  <!-- Body -->
   <div class="fyf-post-body">
     {{ .Content }}
   </div>
 
-  <!-- Sources -->
   {{- if $params.source_links }}
   <div class="fyf-sources">
     <span class="fyf-sources-label">{{ if $isHindi }}स्रोत{{ else }}Sources{{ end }}</span>
     {{- range $params.source_links }}
-    <a href="{{ .url }}" class="fyf-source-link" target="_blank" rel="noopener noreferrer">{{ .label }}</a>
+    <a href="{{ .url }}" class="fyf-source-pill" target="_blank" rel="noopener noreferrer">{{ .label }}</a>
     {{- end }}
   </div>
   {{- end }}
 
-  <!-- Tags -->
   {{- if $params.subject_tags }}
   <div class="fyf-tags">
     {{- range $params.subject_tags }}
@@ -84,133 +65,176 @@
 </article>
 
 <style>
-/* ── Single post ── */
-.fyf-single {
+.fyf-post {
   max-width: 680px;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
 }
 
-/* Header accent bar driven by sentiment */
+/* Header */
 .fyf-post-header {
+  border-left: 3px solid #94A3B8;
   padding-left: 1.1rem;
-  border-left: 3px solid var(--border);
   margin-bottom: 2rem;
 }
-.fyf-single:not(.fyf-hindi) .fyf-post-header { border-left-color: #cbd5e1; }
+.fyf-post-header.s-positive { border-left-color: #059669; }
+.fyf-post-header.s-negative { border-left-color: #DC2626; }
+.fyf-post-header.s-watch    { border-left-color: #D97706; }
 
-/* Meta top */
-.fyf-post-meta-top {
-  display: flex; gap: 0.45rem; align-items: center;
-  margin-bottom: 0.7rem; flex-wrap: wrap;
-}
-.fyf-meta-sep { color: var(--secondary); opacity: 0.35; }
-
-.fyf-sentiment-badge {
-  font-size: 0.67rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.07em;
-  padding: 0.18rem 0.55rem; border-radius: 99px;
-  background: var(--code-bg);
-}
-.fyf-sentiment-badge.s-positive { color: #16a34a; }
-.fyf-sentiment-badge.s-negative { color: #dc2626; }
-.fyf-sentiment-badge.s-neutral  { color: #64748b; }
-.fyf-sentiment-badge.s-watch    { color: #d97706; }
-
-.fyf-score-badge {
-  font-size: 0.67rem; font-weight: 600;
-  padding: 0.18rem 0.55rem; border-radius: 99px;
-  background: var(--code-bg); color: var(--secondary);
+/* Top bar */
+.fyf-post-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
 }
 
-.fyf-lang-switcher { margin-left: auto; }
+/* Badges */
+.fyf-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(22, 78, 99, 0.07);
+  color: var(--fyf-navy, #164E63);
+}
+.fyf-badge.s-positive { color: #059669; background: rgba(5,150,105,0.08); }
+.fyf-badge.s-negative { color: #DC2626; background: rgba(220,38,38,0.08); }
+.fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.08); }
+.fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.08); }
+.fyf-badge-score      { color: var(--fyf-muted, #6B7280); background: var(--code-bg); }
+
+/* Translation button */
+.fyf-lang-switch { margin-left: auto; }
 .fyf-lang-btn {
-  font-size: 0.72rem; font-weight: 600;
-  padding: 0.22rem 0.7rem; border-radius: 6px;
-  border: 1px solid var(--border);
-  color: var(--secondary); text-decoration: none;
-  background: var(--code-bg);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.22rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--fyf-border, rgba(22,78,99,0.15));
+  color: var(--fyf-navy, #164E63);
+  text-decoration: none;
+  background: rgba(22, 78, 99, 0.05);
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
 }
-.fyf-lang-btn:hover { background: var(--primary); color: var(--theme); text-decoration: none; }
+.fyf-lang-btn:hover {
+  background: var(--fyf-navy, #164E63);
+  color: #fff;
+  text-decoration: none;
+}
 
 /* Title */
 .fyf-post-title {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 400; line-height: 1.3;
-  margin: 0 0 0.55rem; color: var(--primary);
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+  font-weight: 300;
+  line-height: 1.3;
   letter-spacing: -0.01em;
+  color: var(--fyf-navy, #164E63);
+  margin: 0 0 0.6rem;
 }
 .fyf-hindi .fyf-post-title {
   font-family: 'Noto Sans Devanagari', sans-serif;
-  font-weight: 700; font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  letter-spacing: 0;
 }
 
-/* Sub-meta */
-.fyf-post-meta-row {
-  font-size: 0.75rem; color: var(--secondary);
-  display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center;
+/* Byline */
+.fyf-post-byline {
+  font-size: 0.74rem;
+  color: var(--fyf-muted, #6B7280);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem;
   text-transform: capitalize;
+  font-variant-numeric: tabular-nums;
 }
-.fyf-meta-time { font-variant-numeric: tabular-nums; }
-.fyf-dot { opacity: 0.35; }
+.fyf-sep { opacity: 0.35; }
 
 /* Body */
-.fyf-post-body { margin-top: 1.75rem; }
+.fyf-post-body { margin-top: 2rem; }
 
 .fyf-post-body h2 {
   font-family: 'Inter', sans-serif;
-  font-size: 0.68rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.1em;
-  color: var(--secondary);
-  margin: 2rem 0 0.45rem; padding-bottom: 0.3rem;
-  border-bottom: 1px solid var(--border);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fyf-navy, #164E63);
+  margin: 2rem 0 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--fyf-border, rgba(22,78,99,0.12));
 }
 .fyf-post-body p {
-  font-size: 0.975rem; line-height: 1.85;
-  color: var(--primary); margin: 0 0 0.5rem;
+  font-size: 0.975rem;
+  line-height: 1.85;
+  color: var(--fyf-text, #374151);
+  margin: 0 0 0.5rem;
 }
 
-/* Hindi body overrides */
+/* Hindi body */
 .fyf-hindi .fyf-post-body h2 {
   font-family: 'Noto Sans Devanagari', sans-serif;
-  text-transform: none; letter-spacing: 0;
+  text-transform: none;
+  letter-spacing: 0;
   font-size: 0.85rem;
 }
 .fyf-hindi .fyf-post-body p {
   font-family: 'Noto Sans Devanagari', sans-serif;
-  font-size: 1rem; line-height: 2.1;
+  font-size: 1rem;
+  line-height: 2.1;
 }
 
 /* Sources */
 .fyf-sources {
-  margin-top: 2.25rem; padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--fyf-border, rgba(22,78,99,0.12));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
 }
 .fyf-sources-label {
-  font-size: 0.65rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.09em;
-  color: var(--secondary); margin-right: 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fyf-muted, #6B7280);
+  margin-right: 0.2rem;
 }
-.fyf-source-link {
-  font-size: 0.75rem; color: var(--secondary);
-  text-decoration: none; background: var(--code-bg);
-  padding: 0.18rem 0.6rem; border-radius: 4px;
-  border: 1px solid var(--border);
+.fyf-source-pill {
+  font-size: 0.72rem;
+  color: var(--fyf-navy, #164E63);
+  text-decoration: none;
+  background: rgba(22, 78, 99, 0.06);
+  border: 1px solid var(--fyf-border, rgba(22,78,99,0.15));
+  padding: 0.18rem 0.6rem;
+  border-radius: 4px;
+  transition: background 0.15s;
 }
-.fyf-source-link:hover { color: var(--primary); }
+.fyf-source-pill:hover { background: rgba(22,78,99,0.12); text-decoration: none; }
 
 /* Tags */
 .fyf-tags {
-  margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.35rem;
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
 }
 .fyf-tag {
-  font-size: 0.65rem; font-weight: 500;
-  padding: 0.18rem 0.5rem; border-radius: 4px;
-  background: var(--code-bg); color: var(--secondary);
+  font-size: 0.63rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(217, 119, 6, 0.08);
+  color: var(--fyf-amber, #D97706);
   letter-spacing: 0.02em;
 }
 

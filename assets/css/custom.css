@@ -1,40 +1,37 @@
-/* FundYourFreedom News — custom styles */
+/* FundYourFreedom News — brand-matched styles */
 
-/* ── Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
+/* Brand palette — mirrors fyf-blog */
 :root {
-  --fyf-font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --fyf-font-display: 'DM Serif Display', Georgia, serif;
-  --fyf-font-hindi:   'Noto Sans Devanagari', 'Inter', sans-serif;
+  --fyf-navy:   #164E63;
+  --fyf-amber:  #D97706;
+  --fyf-text:   #374151;
+  --fyf-muted:  #6B7280;
+  --fyf-base:   #FAFAFA;
+  --fyf-border: rgba(22, 78, 99, 0.12);
+}
+.dark {
+  --fyf-navy:   #38BDF8;
+  --fyf-amber:  #FCD34D;
+  --fyf-text:   #E5E7EB;
+  --fyf-muted:  #9CA3AF;
+  --fyf-base:   #1F2937;
+  --fyf-border: rgba(255,255,255,0.08);
 }
 
+/* Body font */
 body {
-  font-family: var(--fyf-font-body);
-  font-size: 15px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hindi pages */
-.lang-hi body,
-body.lang-hi {
-  font-family: var(--fyf-font-hindi);
+/* Hindi font */
+:lang(hi), .fyf-hindi, .fyf-hindi * {
+  font-family: 'Noto Sans Devanagari', sans-serif !important;
 }
 
-/* ── Legacy sentiment classes (kept for backwards compat) ── */
-.sentiment-positive { color: #16a34a; }
-.sentiment-negative { color: #dc2626; }
-.sentiment-neutral  { color: #64748b; }
-.sentiment-watch    { color: #d97706; }
-
-/* ── PaperMod overrides ── */
-.post-title,
-.entry-header h2 {
-  font-family: var(--fyf-font-display);
-}
-
-.post-content h1,
-.post-content h2,
-.post-content h3 {
-  font-family: var(--fyf-font-body);
-}
+/* PaperMod header/nav accent */
+.header { border-bottom: 1px solid var(--fyf-border); }
+.logo a, .logo span { color: var(--fyf-navy) !important; }
