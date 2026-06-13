@@ -1,5 +1,10 @@
 {{- define "main" }}
-{{- $allPosts := where (where site.RegularPages "Section" "news") ".Params.language" "ne" "hi" }}
+{{- $allPosts := slice }}
+{{- range where site.RegularPages "Section" "news" }}
+  {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
+    {{- $allPosts = $allPosts | append . }}
+  {{- end }}
+{{- end }}
 {{- $grouped := $allPosts.GroupByDate "2006-01-02" }}
 
 <div class="fyf-list-wrap">
