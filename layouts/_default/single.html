@@ -30,7 +30,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body, h1, h2, h3, p, span, a, li {
+body, h1, h2, h3, p, span, a, li, div {
   font-family: 'Noto Sans Devanagari', sans-serif !important;
 }
 </style>
@@ -41,6 +41,7 @@ body, h1, h2, h3, p, span, a, li {
   <header class="fyf-post-header sentiment-{{ $sentiment }}">
     <div class="fyf-post-meta-top">
       <span class="fyf-sentiment-badge sentiment-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
+      <span class="fyf-meta-sep">·</span>
       <span class="fyf-score-badge">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
 
       {{- if .Translations }}
@@ -48,7 +49,7 @@ body, h1, h2, h3, p, span, a, li {
         {{- range .Translations }}
         <a href="{{ .Permalink }}" class="fyf-lang-btn" hreflang="{{ .Language.Lang }}"
            title="{{ if eq .Language.Lang `hi` }}हिंदी में पढ़ें{{ else }}Read in English{{ end }}">
-          {{ if eq .Language.Lang "hi" }}हि{{ else }}EN{{ end }}
+          {{ if eq .Language.Lang "hi" }}🇮🇳 हिंदी में पढ़ें{{ else }}🇬🇧 Read in English{{ end }}
         </a>
         {{- end }}
       </div>
@@ -57,14 +58,14 @@ body, h1, h2, h3, p, span, a, li {
 
     <h1 class="fyf-post-title">{{ .Title }}</h1>
     <div class="fyf-post-meta-row">
-      <span>{{ .Date.Format "2 Jan 2006, 3:04 PM" }}</span>
+      <span>{{ .Date.Format "2 Jan 2006, 3:04 PM" }} IST</span>
       {{- if $params.primary_persona }}<span class="fyf-dot">·</span><span>{{ $params.primary_persona }}</span>{{- end }}
       {{- if $params.category }}<span class="fyf-dot">·</span><span>{{ $params.category }}</span>{{- end }}
       {{- if $params.impact_horizon }}<span class="fyf-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
   </header>
 
-  <div class="fyf-post-body">
+  <div class="fyf-post-body{{ if $isHindi }} fyf-hindi{{ end }}">
     {{ .Content }}
   </div>
 
@@ -99,6 +100,7 @@ body, h1, h2, h3, p, span, a, li {
 .fyf-post-header.sentiment-watch    { border-left-color: #f59e0b; }
 
 .fyf-post-meta-top { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; }
+.fyf-meta-sep { color: var(--secondary); opacity: 0.4; font-size: 0.8rem; }
 .fyf-sentiment-badge { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.6rem; border-radius: 99px; background: var(--code-bg); }
 .fyf-sentiment-badge.sentiment-positive { color: #16a34a; }
 .fyf-sentiment-badge.sentiment-negative { color: #dc2626; }
@@ -106,21 +108,23 @@ body, h1, h2, h3, p, span, a, li {
 .fyf-sentiment-badge.sentiment-watch    { color: #d97706; }
 .fyf-score-badge { font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px; background: var(--code-bg); color: var(--secondary); }
 
-.fyf-lang-switcher { margin-left: auto; display: flex; gap: 0.25rem; }
+.fyf-lang-switcher { margin-left: auto; }
 .fyf-lang-btn {
-  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em;
-  padding: 0.2rem 0.55rem; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 600;
+  padding: 0.25rem 0.75rem; border-radius: 6px;
   border: 1px solid var(--border);
   color: var(--secondary); text-decoration: none;
   background: var(--code-bg);
   transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
-.fyf-lang-btn:hover { background: var(--primary); color: var(--theme); }
+.fyf-lang-btn:hover { background: var(--primary); color: var(--theme); text-decoration: none; }
 
 .fyf-post-title { font-size: 1.6rem; font-weight: 700; line-height: 1.35; margin: 0.25rem 0 0.6rem 0; color: var(--primary); }
 .fyf-post-meta-row { font-size: 0.8rem; color: var(--secondary); display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center; text-transform: capitalize; }
 .fyf-dot { color: var(--secondary); opacity: 0.4; }
 
+/* English section headings */
 .fyf-post-body h2 {
   font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--secondary);
@@ -129,6 +133,16 @@ body, h1, h2, h3, p, span, a, li {
 }
 .fyf-post-body p { font-size: 1rem; line-height: 1.8; color: var(--primary); margin: 0 0 0.5rem 0; }
 .fyf-post-body h2:last-of-type + p { font-style: italic; color: var(--secondary); }
+
+/* Hindi section headings — no uppercase, larger size, normal tracking */
+.fyf-post-body.fyf-hindi h2 {
+  font-size: 0.9rem; font-weight: 700;
+  text-transform: none; letter-spacing: 0;
+  color: var(--secondary);
+  margin: 1.75rem 0 0.4rem 0; padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+.fyf-post-body.fyf-hindi p { font-size: 1.05rem; line-height: 2; }
 
 .fyf-sources { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .fyf-sources h3 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--secondary); margin-bottom: 0.5rem; }

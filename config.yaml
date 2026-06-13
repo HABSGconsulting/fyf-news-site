@@ -2,6 +2,7 @@ baseURL: https://news.fundyourfreedom.in
 languageCode: en-in
 title: FundYourFreedom News
 theme: PaperMod
+timeZone: Asia/Kolkata
 
 pagination:
   pagerSize: 20
