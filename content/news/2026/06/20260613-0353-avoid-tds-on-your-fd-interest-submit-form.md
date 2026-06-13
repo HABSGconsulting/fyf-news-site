@@ -30,9 +30,11 @@ source_links:
 learn_links:
 
 ---
-## What happened
+## Who is affected
 
 Fixed deposit holders earning significant interest income.
+
+## What changes
 
 Banks will deduct 10% TDS if interest exceeds ₹50,000 (or ₹1 lakh for seniors) unless Form 121 is submitted.
 

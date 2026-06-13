@@ -30,9 +30,11 @@ source_links:
 learn_links:
 
 ---
-## What happened
+## Who is affected
 
 Investors in debt mutual funds and government bonds.
+
+## What changes
 
 Falling crude oil prices are easing inflation concerns, leading to a rise in bond prices.
 

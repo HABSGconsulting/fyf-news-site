@@ -1,10 +1,12 @@
 {{- define "main" }}
-{{- $posts := where .Pages "Kind" "page" }}
+{{- $allPosts := where (where site.RegularPages "Section" "news") ".Params.language" "ne" "hi" }}
+{{- $grouped := $allPosts.GroupByDate "2006-01-02" }}
+
 <div class="fyf-list-wrap">
-  {{- if not $posts }}
-    <p style="color:var(--secondary);padding:2rem 0">No posts here yet.</p>
+  {{- if not $grouped }}
+    <p style="color:var(--secondary);padding:2rem 0">No posts yet. Check back soon.</p>
   {{- else }}
-    {{- range ($posts.GroupByDate "2006-01-02") }}
+    {{- range $grouped }}
     <div class="fyf-day-group">
       <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" }}</div>
       <div class="fyf-cards">
@@ -32,9 +34,18 @@
 <style>
 .fyf-list-wrap { max-width: 860px; margin: 0 auto; padding: 2rem 1rem; }
 .fyf-day-group { margin-bottom: 2.5rem; }
-.fyf-day-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 1rem; }
+.fyf-day-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--secondary);
+  border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 1rem;
+}
 .fyf-cards { display: flex; flex-direction: column; gap: 0.75rem; }
-.fyf-card { display: block; text-decoration: none; color: inherit; background: var(--entry); border: 1px solid var(--border); border-left: 4px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; transition: box-shadow 0.15s ease; }
+.fyf-card {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--entry); border: 1px solid var(--border);
+  border-left: 4px solid var(--border); border-radius: 8px;
+  padding: 1rem 1.25rem; transition: box-shadow 0.15s ease;
+}
 .fyf-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); text-decoration: none; }
 .fyf-card.sentiment-positive { border-left-color: #22c55e; }
 .fyf-card.sentiment-negative { border-left-color: #ef4444; }

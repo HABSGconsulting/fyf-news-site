@@ -31,9 +31,11 @@ source_links:
 learn_links:
 
 ---
-## What happened
+## Who is affected
 
 All mutual fund investors, especially those with HDFC AMC.
+
+## What changes
 
 Personal data may be at risk following a confirmed breach at the asset management company.
 

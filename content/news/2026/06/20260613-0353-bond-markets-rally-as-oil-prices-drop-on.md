@@ -30,9 +30,11 @@ source_links:
 learn_links:
 
 ---
-## What happened
+## Who is affected
 
 Fixed income investors holding government bonds will see price gains.
+
+## What changes
 
 Falling oil prices are lowering bond yields, which increases the value of existing bond holdings.
 
