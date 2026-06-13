@@ -1,5 +1,5 @@
 ---
-title: "Foreign investors ke liye niyam aasaan, market mein liquidity badh sakti hai"
+title: "विदेशी निवेशकों के लिए नियम होंगे आसान — बाजार में आ सकती है नई तेजी"
 date: 2026-06-13T04:53:25Z
 draft: false
 language: hi
@@ -22,25 +22,25 @@ subject_tags:
 concepts:
   - "SEBI"
 concept_difficulty: "intermediate"
-whatsapp_caption: "SEBI ke naye niyam se market mein aa sakta hai naya capital"
+whatsapp_caption: "SEBI के नए नियमों से बाजार में आ सकती है नई पूंजी"
 source_links:
   - url: "https://economictimes.indiatimes.com/markets/stocks/news/sebi-plans-to-ease-kyc-rules-for-fpis-offer-more-clarity-to-global-capital/articleshow/131697622.cms"
-    label: "SEBI Policy Update"
+    label: "SEBI नीति अपडेट"
 learn_links:
 
 ---
-## Kise prabhavit karta hai
+## किसे असर होगा
 
-Sabhi equity investors, kyunki aasaan niyam global capital ko India ki taraf attract kar sakte hain.
+सभी equity निवेशकों को, क्योंकि आसान नियम वैश्विक पूंजी को भारत की ओर आकर्षित कर सकते हैं।
 
-## Kya badlega
+## क्या बदलेगा
 
-SEBI foreign portfolio investors (FPIs) ke liye KYC aur disclosure norms ko simplify karne ki planning kar raha hai.
+SEBI, FPI के लिए KYC और disclosure norms को सरल बनाने की योजना बना रहा है।
 
-## Kyun zaroori hai
+## यह क्यों ज़रूरी है
 
-Global funds ke liye ease of doing business market ki stability ke liye achha hai.
+वैश्विक फंड्स के लिए आसान व्यापार से बाजार की स्थिरता में सुधार आता है। अधिक FPI निवेश से Nifty में मजबूती आ सकती है।
 
-## Aap kya kar sakte hain
+## आप क्या कर सकते हैं
 
-Apni SIP jaari rakhein; institutional flows ke badlaav par react karne ke bajaye long-term wealth creation par focus karein.
+अपनी SIP जारी रखें। संस्थागत प्रवाह के बदलाव पर प्रतिक्रिया देने के बजाय दीर्घकालिक संपत्ति निर्माण पर ध्यान दें।

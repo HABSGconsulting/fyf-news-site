@@ -1,5 +1,5 @@
 ---
-title: "Crude oil ke daam gire, aapke portfolio ko mil sakti hai raahat"
+title: "क्रूड ऑयल के दाम गिरे — आपके portfolio को मिल सकती है बड़ी राहत!"
 date: 2026-06-13T04:53:25Z
 draft: false
 language: hi
@@ -16,32 +16,32 @@ shareable: true
 push_notify: true
 trigger_event: ""
 subject_tags:
-  - "crude oil"
+  - "क्रूड ऑयल"
   - "inflation"
   - "market rally"
 concepts:
   - "inflation"
   - "GDP"
 concept_difficulty: "beginner"
-whatsapp_caption: "Crude oil ke daam gire, market mein raahat!"
+whatsapp_caption: "क्रूड ऑयल के दाम गिरे — बाजार में राहत की लहर!"
 source_links:
   - url: "https://economictimes.indiatimes.com/markets/stocks/news/falling-crude-oil-price-sends-tyre-paint-oil-marketing-and-airline-companies-soaring-in-relief-rally/articleshow/131697562.cms"
-    label: "Market Report"
+    label: "बाजार रिपोर्ट"
 learn_links:
 
 ---
-## Kise prabhavit karta hai
+## किसे असर होगा
 
-Airlines, paints, aur tyre sector mein nivesh karne waale retail investors.
+एयरलाइंस, paint और tyre सेक्टर में निवेश करने वाले रिटेल निवेशकों को सीधा फायदा हो सकता है।
 
-## Kya badlega
+## क्या बदलेगा
 
-In companies ka input cost kam hone se inke margins aur stock performance mein sudhaar aa sakta hai.
+इन कंपनियों की input cost कम होने से उनके margin और शेयर मूल्य में सुधार आ सकता है।
 
-## Kyun zaroori hai
+## यह क्यों ज़रूरी है
 
-Crude oil ke daam ghatna Indian economy aur corporate earnings ke liye positive hai.
+Crude oil के दाम घटना भारतीय अर्थव्यवस्था और corporate earnings के लिए सकारात्मक संकेत है।
 
-## Aap kya kar sakte hain
+## आप क्या कर सकते हैं
 
-Apne portfolio mein oil-sensitive sectors ka exposure check karein, par sirf short-term rally ke peeche na bhaagein.
+अपने portfolio में oil-sensitive सेक्टर का exposure जाँचें, लेकिन सिर्फ अल्पकालिक rally के पीछे न भागें — अपनी SIP जारी रखें।

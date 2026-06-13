@@ -2,15 +2,46 @@
 {{- $params := .Params }}
 {{- $score := $params.editorial_impact_score | default 0 }}
 {{- $sentiment := $params.sentiment | default "neutral" }}
-{{- $sentimentIcon := dict "positive" "↗️" "negative" "↘️" "neutral" "→" "watch" "⚠️" }}
-{{- $icon := index $sentimentIcon $sentiment | default "→" }}
+{{- $isHindi := eq site.Language.Lang "hi" }}
+
+{{- $sentimentLabel := dict
+  "positive" "Positive"
+  "negative" "Negative"
+  "neutral"  "Neutral"
+  "watch"    "Watch"
+}}
+{{- $sentimentLabelHi := dict
+  "positive" "सकारात्मक"
+  "negative" "नकारात्मक"
+  "neutral"  "तटस्थ"
+  "watch"    "सावधान"
+}}
+{{- $sentimentIcon := dict
+  "positive" "↗️"
+  "negative" "↘️"
+  "neutral"  "→"
+  "watch"    "⚠️"
+}}
+{{- $icon  := index $sentimentIcon $sentiment | default "→" }}
+{{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabel $sentiment | default ($sentiment | title)) }}
+
+{{- if $isHindi }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body, h1, h2, h3, p, span, a, li {
+  font-family: 'Noto Sans Devanagari', sans-serif !important;
+}
+</style>
+{{- end }}
 
 <article class="fyf-single">
 
   <header class="fyf-post-header sentiment-{{ $sentiment }}">
     <div class="fyf-post-meta-top">
-      <span class="fyf-sentiment-badge sentiment-{{ $sentiment }}">{{ $icon }} {{ $sentiment | title }}</span>
-      <span class="fyf-score-badge">Impact {{ $score }}/10</span>
+      <span class="fyf-sentiment-badge sentiment-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
+      <span class="fyf-score-badge">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
     </div>
     <h1 class="fyf-post-title">{{ .Title }}</h1>
     <div class="fyf-post-meta-row">
@@ -27,7 +58,7 @@
 
   {{- if $params.source_links }}
   <div class="fyf-sources">
-    <h3>Sources</h3>
+    <h3>{{ if $isHindi }}स्रोत{{ else }}Sources{{ end }}</h3>
     <ul>
       {{- range $params.source_links }}
       <li><a href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a></li>
@@ -63,31 +94,25 @@
 .fyf-sentiment-badge.sentiment-watch    { color: #d97706; }
 .fyf-score-badge { font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px; background: var(--code-bg); color: var(--secondary); }
 
-.fyf-post-title { font-size: 1.6rem; font-weight: 700; line-height: 1.25; margin: 0.25rem 0 0.6rem 0; color: var(--primary); }
+.fyf-post-title { font-size: 1.6rem; font-weight: 700; line-height: 1.35; margin: 0.25rem 0 0.6rem 0; color: var(--primary); }
 .fyf-post-meta-row { font-size: 0.8rem; color: var(--secondary); display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center; text-transform: capitalize; }
 .fyf-dot { color: var(--secondary); opacity: 0.4; }
 
-/* Section headings */
 .fyf-post-body h2 {
   font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--secondary);
   margin: 1.75rem 0 0.4rem 0; padding-bottom: 0.3rem;
   border-bottom: 1px solid var(--border);
 }
-.fyf-post-body p { font-size: 1rem; line-height: 1.7; color: var(--primary); margin: 0 0 0.5rem 0; }
+.fyf-post-body p { font-size: 1rem; line-height: 1.8; color: var(--primary); margin: 0 0 0.5rem 0; }
+.fyf-post-body h2:last-of-type + p { font-style: italic; color: var(--secondary); }
 
-/* Action paragraph — italics only, no other change */
-.fyf-post-body h2:last-of-type + p,
-.fyf-action-p { font-style: italic; color: var(--secondary); }
-
-/* Sources */
 .fyf-sources { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .fyf-sources h3 { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--secondary); margin-bottom: 0.5rem; }
 .fyf-sources ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .fyf-sources li a { font-size: 0.8rem; color: var(--secondary); text-decoration: none; background: var(--code-bg); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border); }
 .fyf-sources li a:hover { color: var(--primary); }
 
-/* Tags */
 .fyf-tags { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .fyf-tag { font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 4px; background: var(--code-bg); color: var(--secondary); text-transform: lowercase; }
 
