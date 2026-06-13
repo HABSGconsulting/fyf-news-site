@@ -3,7 +3,8 @@ languageCode: en-in
 title: FundYourFreedom News
 theme: PaperMod
 
-paginate: 20
+pagination:
+  pagerSize: 20
 
 params:
   homeInfoParams:
@@ -34,7 +35,7 @@ languages:
     languageName: English
     weight: 1
   hi:
-    languageName: "हिंदी"
+    languageName: "\u0939\u093f\u0902\u0926\u0940"
     weight: 2
     contentDir: content
 
