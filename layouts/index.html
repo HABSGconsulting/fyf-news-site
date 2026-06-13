@@ -11,7 +11,7 @@
 <div class="fyf-home">
 
   <div class="fyf-post-list">
-  {{- $pages := where site.RegularPages "Type" "posts" }}
+  {{- $pages := where site.RegularPages "Type" "news" }}
   {{- $pages = sort $pages "Date" "desc" }}
 
   {{- range $pages }}
@@ -32,7 +32,6 @@
         {{- if .Params.primary_persona }}<span class="fyf-sep">·</span><span>{{ .Params.primary_persona }}</span>{{- end }}
         {{- if .Params.category }}<span class="fyf-sep">·</span><span>{{ .Params.category }}</span>{{- end }}
 
-        {{/* Inline translation link on homepage cards */}}
         {{- if .Translations }}
         <span class="fyf-sep">|</span>
         <span>{{ if $isHindi }}अनुवाद:{{ else }}Translations:{{ end }}</span>
@@ -86,7 +85,6 @@
 }
 .fyf-sep { opacity: 0.4; }
 
-/* Translation link — matches blog orange style */
 .fyf-translation-link {
   color: var(--theme, #ff6e00);
   font-weight: 600;
