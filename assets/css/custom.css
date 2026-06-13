@@ -1,7 +1,10 @@
 /* FundYourFreedom News — brand-matched styles */
 
-/* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+/* English fonts */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&display=swap');
+
+/* Hindi fonts */
+@import url('https://fonts.googleapis.com/css2?family=Yatra+One&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap');
 
 /* Brand palette — mirrors fyf-blog */
 :root {
@@ -11,6 +14,8 @@
   --fyf-muted:  #6B7280;
   --fyf-base:   #FAFAFA;
   --fyf-border: rgba(22, 78, 99, 0.12);
+  --font-hindi-heading: 'Yatra One', serif;
+  --font-hindi-body:    'Tiro Devanagari Hindi', serif;
 }
 .dark {
   --fyf-navy:   #38BDF8;
@@ -21,15 +26,15 @@
   --fyf-border: rgba(255,255,255,0.08);
 }
 
-/* Body font */
+/* Body font (English) */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hindi font */
-:lang(hi), .fyf-hindi, .fyf-hindi * {
-  font-family: 'Noto Sans Devanagari', sans-serif !important;
+/* Hindi — base body font via lang selector */
+:lang(hi) {
+  font-family: var(--font-hindi-body);
 }
 
 /* PaperMod header/nav accent */
