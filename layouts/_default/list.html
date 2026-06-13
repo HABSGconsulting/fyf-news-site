@@ -1,41 +1,27 @@
 {{- define "main" }}
 <div class="fyf-list-wrap">
 
-  {{/* Group posts by date (YYYY-MM-DD) */}}
-  {{- $byDate := dict }}
-  {{- range .Pages }}
-    {{- $day := .Date.Format "2006-01-02" }}
-    {{- $existing := index $byDate $day | default slice }}
-    {{- $byDate = merge $byDate (dict $day (append $existing .)) }}
-  {{- end }}
-
-  {{- $sortedDays := slice }}
-  {{- range $day, $_ := $byDate }}{{- $sortedDays = append $sortedDays $day }}{{- end }}
-  {{- $sortedDays = sort $sortedDays "value" "desc" }}
-
-  {{- range $sortedDays }}
-    {{- $day := . }}
-    {{- $posts := index $byDate $day }}
-    <div class="fyf-day-group">
-      <div class="fyf-day-label">{{ time $day | time.Format "Monday, 2 January 2006" }}</div>
-      <div class="fyf-cards">
-        {{- range sort $posts "Date" "desc" }}
-          {{- $score := .Params.editorial_impact_score | default 0 }}
-          {{- $sentiment := .Params.sentiment | default "neutral" }}
-          <a class="fyf-card sentiment-{{ $sentiment }}" href="{{ .Permalink }}">
-            <div class="fyf-card-top">
-              <span class="fyf-persona">{{ .Params.primary_persona }}</span>
-              <span class="fyf-score" title="Impact score">{{ $score }}/10</span>
-            </div>
-            <h2 class="fyf-card-title">{{ .Title }}</h2>
-            <div class="fyf-card-meta">
-              <span class="fyf-horizon">{{ .Params.impact_horizon }}</span>
-              <span class="fyf-category">{{ .Params.category }}</span>
-            </div>
-          </a>
-        {{- end }}
-      </div>
+  {{- range (.Pages.GroupByDate "2006-01-02") }}
+  <div class="fyf-day-group">
+    <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" }}</div>
+    <div class="fyf-cards">
+      {{- range .Pages }}
+        {{- $sentiment := .Params.sentiment | default "neutral" }}
+        {{- $score    := .Params.editorial_impact_score | default 0 }}
+        <a class="fyf-card sentiment-{{ $sentiment }}" href="{{ .Permalink }}">
+          <div class="fyf-card-top">
+            <span class="fyf-persona">{{ .Params.primary_persona }}</span>
+            <span class="fyf-score">{{ $score }}/10</span>
+          </div>
+          <h2 class="fyf-card-title">{{ .Title }}</h2>
+          <div class="fyf-card-meta">
+            {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
+            {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
+          </div>
+        </a>
+      {{- end }}
     </div>
+  </div>
   {{- end }}
 
 </div>
@@ -45,7 +31,7 @@
 
 .fyf-day-group { margin-bottom: 2.5rem; }
 .fyf-day-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -66,14 +52,14 @@
   border-left: 4px solid var(--border);
   border-radius: 8px;
   padding: 1rem 1.25rem;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: box-shadow 0.15s ease;
 }
 .fyf-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); text-decoration: none; }
 
-.fyf-card.sentiment-positive  { border-left-color: #22c55e; }
-.fyf-card.sentiment-negative  { border-left-color: #ef4444; }
-.fyf-card.sentiment-neutral   { border-left-color: #94a3b8; }
-.fyf-card.sentiment-watch     { border-left-color: #f59e0b; }
+.fyf-card.sentiment-positive { border-left-color: #22c55e; }
+.fyf-card.sentiment-negative { border-left-color: #ef4444; }
+.fyf-card.sentiment-neutral  { border-left-color: #94a3b8; }
+.fyf-card.sentiment-watch    { border-left-color: #f59e0b; }
 
 .fyf-card-top {
   display: flex;
@@ -89,10 +75,10 @@
   color: var(--secondary);
 }
 .fyf-score {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   background: var(--code-bg);
-  padding: 0.1rem 0.5rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 99px;
   color: var(--primary);
 }
@@ -103,13 +89,9 @@
   margin: 0 0 0.5rem 0;
   color: var(--primary);
 }
-.fyf-card-meta {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.fyf-horizon, .fyf-category {
-  font-size: 0.7rem;
+.fyf-card-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.fyf-chip {
+  font-size: 0.68rem;
   background: var(--code-bg);
   color: var(--secondary);
   padding: 0.15rem 0.5rem;
