@@ -1,62 +1,176 @@
-{{ define "main" }}
-<article class="post-single">
-  <header class="post-header">
-    {{ with .Params.sentiment }}
-    <span class="sentiment sentiment-{{ . }}">{{ . | upper }}</span>
-    {{ end }}
-    <h1 class="post-title">{{ .Title }}</h1>
-    <div class="post-meta">
-      {{ .Date.Format "2 Jan 2006, 3:04 PM" }}
-      {{ with .Params.primary_persona }}
-      &nbsp;&middot;&nbsp; <span class="persona">{{ . }}</span>
-      {{ end }}
-      {{ with .Params.editorial_impact_score }}
-      &nbsp;&middot;&nbsp; Impact: {{ . }}/10
-      {{ end }}
+{{- define "main" }}
+{{- $params := .Params }}
+{{- $score := $params.editorial_impact_score | default 0 }}
+{{- $sentiment := $params.sentiment | default "neutral" }}
+{{- $sentimentIcon := dict "positive" "↗️" "negative" "↘️" "neutral" "→" "watch" "⚠️" }}
+{{- $icon := index $sentimentIcon $sentiment | default "→" }}
+
+<article class="fyf-single">
+
+  {{/* Header */}}
+  <header class="fyf-post-header sentiment-{{ $sentiment }}">
+    <div class="fyf-post-meta-top">
+      <span class="fyf-sentiment-badge sentiment-{{ $sentiment }}">{{ $icon }} {{ $sentiment | title }}</span>
+      <span class="fyf-score-badge">Impact {{ $score }}/10</span>
+    </div>
+    <h1 class="fyf-post-title">{{ .Title }}</h1>
+    <div class="fyf-post-meta-row">
+      <span>{{ .Date.Format "2 Jan 2006, 3:04 PM" }}</span>
+      {{- if $params.primary_persona }}<span class="fyf-dot">·</span><span>{{ $params.primary_persona }}</span>{{- end }}
+      {{- if $params.category }}<span class="fyf-dot">·</span><span>{{ $params.category }}</span>{{- end }}
+      {{- if $params.impact_horizon }}<span class="fyf-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
   </header>
 
-  {{ with .Params.comic_url }}
-  <div class="comic-strip">
-    <img src="{{ . }}" alt="Comic illustration for {{ $.Title }}" loading="lazy" />
-  </div>
-  {{ end }}
-
-  <div class="post-content">
+  {{/* Body — parsed from content sections */}}
+  <div class="fyf-post-body">
     {{ .Content }}
   </div>
 
-  {{ with .Params.audio_url }}
-  <div class="audio-player">
-    <p><strong>🎧 Listen to this post</strong></p>
-    <audio controls preload="none">
-      <source src="{{ . }}" type="audio/mpeg">
-    </audio>
-  </div>
-  {{ end }}
-
-  {{ with .Params.learn_links }}
-  <div class="learn-links">
-    <h3>Learn More</h3>
-    <ul>
-    {{ range . }}
-      <li><a href="https://learn.fundyourfreedom.in/{{ .slug }}">{{ .title }}</a>
-      <span class="difficulty">{{ .difficulty }}</span></li>
-    {{ end }}
-    </ul>
-  </div>
-  {{ end }}
-
-  {{ with .Params.source_links }}
-  <div class="source-links">
+  {{/* Sources */}}
+  {{- if $params.source_links }}
+  <div class="fyf-sources">
     <h3>Sources</h3>
     <ul>
-    {{ range . }}
-      <li><a href="{{ .url }}" target="_blank" rel="noopener">{{ .label }}</a></li>
-    {{ end }}
+      {{- range $params.source_links }}
+      <li><a href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a></li>
+      {{- end }}
     </ul>
   </div>
-  {{ end }}
+  {{- end }}
+
+  {{/* Tags */}}
+  {{- if $params.subject_tags }}
+  <div class="fyf-tags">
+    {{- range $params.subject_tags }}
+    <span class="fyf-tag">{{ . }}</span>
+    {{- end }}
+  </div>
+  {{- end }}
 
 </article>
-{{ end }}
+
+<style>
+.fyf-single { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+
+.fyf-post-header {
+  border-left: 4px solid var(--border);
+  padding-left: 1.25rem;
+  margin-bottom: 2rem;
+}
+.fyf-post-header.sentiment-positive { border-left-color: #22c55e; }
+.fyf-post-header.sentiment-negative { border-left-color: #ef4444; }
+.fyf-post-header.sentiment-neutral  { border-left-color: #94a3b8; }
+.fyf-post-header.sentiment-watch    { border-left-color: #f59e0b; }
+
+.fyf-post-meta-top {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.fyf-sentiment-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: var(--code-bg);
+}
+.fyf-sentiment-badge.sentiment-positive { color: #16a34a; }
+.fyf-sentiment-badge.sentiment-negative { color: #dc2626; }
+.fyf-sentiment-badge.sentiment-neutral  { color: #64748b; }
+.fyf-sentiment-badge.sentiment-watch    { color: #d97706; }
+
+.fyf-score-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: var(--code-bg);
+  color: var(--secondary);
+}
+.fyf-post-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0.25rem 0 0.6rem 0;
+  color: var(--primary);
+}
+.fyf-post-meta-row {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  text-transform: capitalize;
+}
+.fyf-dot { color: var(--secondary); opacity: 0.4; }
+
+/* Body section headings */
+.fyf-post-body h2 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  margin: 1.75rem 0 0.4rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+.fyf-post-body p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--primary);
+  margin: 0 0 0.5rem 0;
+}
+
+/* Sources */
+.fyf-sources {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.fyf-sources h3 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+.fyf-sources ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.fyf-sources li a {
+  font-size: 0.8rem;
+  color: var(--secondary);
+  text-decoration: none;
+  background: var(--code-bg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.fyf-sources li a:hover { color: var(--primary); }
+
+/* Tags */
+.fyf-tags {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.fyf-tag {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--secondary);
+  text-transform: lowercase;
+}
+
+@media (max-width: 600px) {
+  .fyf-post-title { font-size: 1.3rem; }
+}
+</style>
+{{- end }}
