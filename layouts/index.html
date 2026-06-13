@@ -1,79 +1,109 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-{{- $allPosts := slice }}
-{{- range where site.RegularPages "Section" "news" }}
-  {{- if $isHindi }}
-    {{- if strings.HasSuffix .File.BaseFileName ".hi" }}
-      {{- $allPosts = $allPosts | append . }}
-    {{- end }}
-  {{- else }}
-    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
-      {{- $allPosts = $allPosts | append . }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- $sorted := sort $allPosts "Date" "desc" }}
 
-<div class="fyf-list-wrap">
-  {{- if not $sorted }}
-    <p style="color:var(--secondary);padding:2rem 0">
-      {{- if $isHindi }}अभी कोई पोस्ट नहीं है। जल्द वापस देखें।{{- else }}No posts yet. Check back soon.{{- end }}
-    </p>
-  {{- else }}
-    {{- $currentDay := "" }}
-    {{- range $sorted }}
-      {{- $day := .Date | time.Format "2006-01-02" }}
-      {{- if ne $day $currentDay }}
-        {{- if ne $currentDay "" }}</div></div>{{- end }}
-        <div class="fyf-day-group">
-          <div class="fyf-day-label">{{ .Date | time.Format "Monday, 2 January 2006" }}</div>
-          <div class="fyf-cards">
-        {{- $currentDay = $day }}
-      {{- end }}
-      {{- $sentiment := .Params.sentiment | default "neutral" }}
-      {{- $score    := .Params.editorial_impact_score | default 0 }}
-      <a class="fyf-card sentiment-{{ $sentiment }}" href="{{ .Permalink }}">
-        <div class="fyf-card-top">
-          <span class="fyf-persona">{{ .Params.primary_persona }}</span>
-          <span class="fyf-score">{{ $score }}/10</span>
-        </div>
+{{- if $isHindi }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body, h1, h2, h3, p, span, a, li { font-family: 'Noto Sans Devanagari', sans-serif !important; }</style>
+{{- end }}
+
+<div class="fyf-home">
+
+  <div class="fyf-post-list">
+  {{- $pages := where site.RegularPages "Type" "posts" }}
+  {{- $pages = sort $pages "Date" "desc" }}
+
+  {{- range $pages }}
+    {{- $isHindiPost := strings.HasSuffix .File.BaseFileName ".hi" }}
+    {{- $showOnThisPage := cond $isHindi $isHindiPost (not $isHindiPost) }}
+    {{- if $showOnThisPage }}
+
+    {{- $s := .Params.sentiment | default "neutral" }}
+    {{- $score := .Params.editorial_impact_score | default 0 }}
+    {{- $icon := index (dict "positive" "↗️" "negative" "↘️" "neutral" "→" "watch" "⚠️") $s | default "→" }}
+
+    <article class="fyf-card sentiment-{{ $s }}">
+      <a href="{{ .Permalink }}" class="fyf-card-link">
         <h2 class="fyf-card-title">{{ .Title }}</h2>
-        <div class="fyf-card-meta">
-          {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
-          {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
-        </div>
       </a>
+      <div class="fyf-card-meta">
+        <span>{{ .Date.Format "2 Jan 2006" }}</span>
+        {{- if .Params.primary_persona }}<span class="fyf-sep">·</span><span>{{ .Params.primary_persona }}</span>{{- end }}
+        {{- if .Params.category }}<span class="fyf-sep">·</span><span>{{ .Params.category }}</span>{{- end }}
+
+        {{/* Inline translation link on homepage cards */}}
+        {{- if .Translations }}
+        <span class="fyf-sep">|</span>
+        <span>{{ if $isHindi }}अनुवाद:{{ else }}Translations:{{ end }}</span>
+        {{- range .Translations }}
+        <a href="{{ .Permalink }}" class="fyf-translation-link" hreflang="{{ .Language.Lang }}">{{ if eq .Language.Lang "hi" }}हि{{ else }}En{{ end }}</a>
+        {{- end }}
+        {{- end }}
+
+        <span class="fyf-sep">·</span>
+        <span class="fyf-sentiment-sm sentiment-{{ $s }}">{{ $icon }} {{ $s | title }}</span>
+        <span class="fyf-score-sm">{{ $score }}/10</span>
+      </div>
+      {{- if .Summary }}
+      <p class="fyf-card-summary">{{ .Summary | truncate 140 }}</p>
+      {{- end }}
+    </article>
+
     {{- end }}
-    {{- if ne $currentDay "" }}</div></div>{{- end }}
   {{- end }}
+  </div>
+
 </div>
 
 <style>
-.fyf-list-wrap { max-width: 860px; margin: 0 auto; padding: 2rem 1rem; }
-.fyf-day-group { margin-bottom: 2.5rem; }
-.fyf-day-label {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--secondary);
-  border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; margin-bottom: 1rem;
-}
-.fyf-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+.fyf-home { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem; }
+.fyf-post-list { display: flex; flex-direction: column; gap: 0; }
+
 .fyf-card {
-  display: block; text-decoration: none; color: inherit;
-  background: var(--entry); border: 1px solid var(--border);
-  border-left: 4px solid var(--border); border-radius: 8px;
-  padding: 1rem 1.25rem; transition: box-shadow 0.15s ease;
+  padding: 1.1rem 0 1.1rem 1rem;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 0.15s;
 }
-.fyf-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); text-decoration: none; }
+.fyf-card:last-child { border-bottom: none; }
 .fyf-card.sentiment-positive { border-left-color: #22c55e; }
 .fyf-card.sentiment-negative { border-left-color: #ef4444; }
 .fyf-card.sentiment-neutral  { border-left-color: #94a3b8; }
 .fyf-card.sentiment-watch    { border-left-color: #f59e0b; }
-.fyf-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
-.fyf-persona { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); }
-.fyf-score { font-size: 0.72rem; font-weight: 700; background: var(--code-bg); padding: 0.15rem 0.5rem; border-radius: 99px; color: var(--primary); }
-.fyf-card-title { font-size: 1.05rem; font-weight: 600; line-height: 1.35; margin: 0 0 0.5rem 0; color: var(--primary); }
-.fyf-card-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.fyf-chip { font-size: 0.68rem; background: var(--code-bg); color: var(--secondary); padding: 0.15rem 0.5rem; border-radius: 4px; text-transform: capitalize; }
+
+.fyf-card-link { text-decoration: none; }
+.fyf-card-title {
+  font-size: 1.05rem; font-weight: 600; line-height: 1.4;
+  color: var(--primary); margin: 0 0 0.35rem 0;
+}
+.fyf-card-link:hover .fyf-card-title { text-decoration: underline; text-underline-offset: 2px; }
+
+.fyf-card-meta {
+  font-size: 0.78rem; color: var(--secondary);
+  display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center;
+  margin-bottom: 0.4rem;
+}
+.fyf-sep { opacity: 0.4; }
+
+/* Translation link — matches blog orange style */
+.fyf-translation-link {
+  color: var(--theme, #ff6e00);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.fyf-translation-link:hover { opacity: 0.75; }
+
+.fyf-sentiment-sm { font-size: 0.7rem; font-weight: 700; text-transform: capitalize; }
+.sentiment-positive .fyf-sentiment-sm { color: #16a34a; }
+.sentiment-negative .fyf-sentiment-sm { color: #dc2626; }
+.sentiment-neutral  .fyf-sentiment-sm { color: #64748b; }
+.sentiment-watch    .fyf-sentiment-sm { color: #d97706; }
+.fyf-score-sm { font-size: 0.7rem; color: var(--secondary); background: var(--code-bg); padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+.fyf-card-summary { font-size: 0.88rem; color: var(--secondary); line-height: 1.6; margin: 0; max-width: 65ch; }
+
 @media (max-width: 600px) { .fyf-card-title { font-size: 0.95rem; } }
 </style>
 {{- end }}
