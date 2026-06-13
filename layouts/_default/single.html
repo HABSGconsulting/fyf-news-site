@@ -141,7 +141,7 @@
 /* ── HINDI title — Yatra One ── */
 .fyf-hindi .fyf-post-title {
   font-family: 'Yatra One', serif;
-  font-weight: 400;          /* Yatra One is display-weight by design */
+  font-weight: 400;
   font-size: clamp(1.35rem, 2.8vw, 2rem);
   line-height: 1.4;
   letter-spacing: 0;
@@ -176,27 +176,28 @@
   border-bottom: 1px solid var(--fyf-border, rgba(22,78,99,0.12));
 }
 .fyf-post-body p {
-  font-size: 0.975rem;
-  line-height: 1.85;
+  font-size: 1.15rem;
+  line-height: 1.9;
   color: var(--fyf-text, #374151);
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.75rem;
 }
 
-/* ── HINDI body — section headings: Yatra One, paragraphs: Tiro Devanagari Hindi ── */
+/* ── HINDI body — Yatra One headings, Tiro Devanagari Hindi paragraphs ── */
 .fyf-hindi .fyf-post-body h2 {
   font-family: 'Yatra One', serif;
   font-weight: 400;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--fyf-navy, #164E63);
 }
 .fyf-hindi .fyf-post-body p,
 .fyf-hindi .fyf-post-body li {
   font-family: 'Tiro Devanagari Hindi', serif;
-  font-size: 1.05rem;
-  line-height: 2.15;
+  font-size: 1.15rem;
+  line-height: 2.2;
   color: var(--fyf-text, #374151);
+  margin: 0 0 0.75rem;
 }
 
 /* Sources */
@@ -246,10 +247,12 @@
   letter-spacing: 0.02em;
 }
 
+/* ── Mobile ── */
 @media (max-width: 600px) {
-  .fyf-post-title { font-size: 1.3rem; }
-  .fyf-post-body p { font-size: 0.93rem; }
-  .fyf-hindi .fyf-post-body p { font-size: 1rem; }
+  .fyf-post-title              { font-size: 1.3rem; }
+  .fyf-post-body p             { font-size: 1.1rem; }
+  .fyf-hindi .fyf-post-body p  { font-size: 1.1rem; }
+  .fyf-hindi .fyf-post-body h2 { font-size: 1rem; }
 }
 </style>
 {{- end }}
