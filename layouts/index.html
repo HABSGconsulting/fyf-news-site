@@ -1,6 +1,7 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-{{- $personaLabels := site.Data.persona_labels | default dict }}
+{{- $personaLabelsAll := site.Data.persona_labels | default dict }}
+{{- $personaLabels := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 
 {{- /* Partition posts into Impact posts and More Reads */}}
 {{- $impactPosts := slice }}
@@ -28,7 +29,7 @@
 
   {{/* ── Impact posts ── */}}
   {{- if not $sorted }}
-    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्т नहीं है।{{ else }}No posts yet. Check back soon.{{ end }}</p>
+    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है। जल्द वापस आएं।{{ else }}No posts yet. Check back soon.{{ end }}</p>
   {{- else }}
     {{- $currentDay := "" }}
     {{- range $sorted }}
@@ -75,20 +76,26 @@
   {{- end }}
 
   {{/* ── More Reads section ── */}}
-  {{- if $sortedMore }}
-  {{- /* Group by category */}}
-  {{- $byCategory := dict }}
-  {{- range $sortedMore }}
-    {{- $cat := .Params.category | default "general" }}
-    {{- $existing := index $byCategory $cat | default slice }}
-    {{- $byCategory = merge $byCategory (dict $cat ($existing | append .)) }}
-  {{- end }}
-
   <section class="fyf-more-reads">
     <div class="fyf-more-reads-header">
       <span class="fyf-more-reads-label">{{ if $isHindi }}और पढ़ें{{ else }}More Reads{{ end }}</span>
+      {{- if $sortedMore }}
       <span class="fyf-more-reads-count">{{ len $sortedMore }}</span>
+      {{- end }}
     </div>
+
+    {{- if not $sortedMore }}
+    {{/* F4 — Empty state */}}
+    <p class="fyf-more-reads-empty">{{ if $isHindi }}आज कोई अतिरिक्त लेख नहीं है।{{ else }}No additional reads today.{{ end }}</p>
+    {{- else }}
+    {{- /* Group by category */}}
+    {{- $byCategory := dict }}
+    {{- range $sortedMore }}
+      {{- $cat := .Params.category | default "general" }}
+      {{- $existing := index $byCategory $cat | default slice }}
+      {{- $byCategory = merge $byCategory (dict $cat ($existing | append .)) }}
+    {{- end }}
+
     <div class="fyf-more-reads-grid">
       {{- range $cat, $items := $byCategory }}
       <div class="fyf-more-reads-col">
@@ -110,8 +117,8 @@
       </div>
       {{- end }}
     </div>
+    {{- end }}
   </section>
-  {{- end }}
 
 </div>
 
@@ -155,8 +162,14 @@
   transform: translateY(-1px);
   text-decoration: none;
 }
+/* F3 — :active tap state for mobile feedback */
+.fyf-card:active {
+  transform: scale(0.99);
+  box-shadow: 0 1px 6px rgba(22, 78, 99, 0.08);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
 
-/* Top sentiment stripe (replaces left accent bar) */
+/* Top sentiment stripe */
 .fyf-card-topstripe { height: 3px; width: 100%; flex-shrink: 0; }
 .fyf-card-topstripe.s-positive { background: #059669; }
 .fyf-card-topstripe.s-negative { background: #DC2626; }
@@ -270,6 +283,13 @@
   color: var(--fyf-navy, #164E63);
   padding: 0.1rem 0.45rem;
   border-radius: 99px;
+}
+/* F4 — Empty state */
+.fyf-more-reads-empty {
+  font-size: 0.82rem;
+  color: var(--fyf-muted, #6B7280);
+  padding: 0.5rem 0 1rem;
+  margin: 0;
 }
 .fyf-more-reads-grid {
   display: grid;

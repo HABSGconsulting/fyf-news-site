@@ -1,4 +1,5 @@
 {
+  "_comment": "English UI labels — used by Hugo templates via site.Data.persona_labels",
   "mutual_fund_investor":  "Mutual Fund Investors",
   "retail_borrower":       "Retail Borrowers",
   "fixed_income_investor": "Fixed Income Seekers",
@@ -6,5 +7,17 @@
   "active_trader":         "Active Traders",
   "salaried_taxpayer":     "Taxpayers",
   "new_investor":          "New Investors",
-  "business_owner":        "Business Owners & Gig Earners"
+  "business_owner":        "Business Owners & Gig Earners",
+
+  "_comment_hi": "Hindi UI labels — used when site.Language.Lang == 'hi'",
+  "hi": {
+    "mutual_fund_investor":  "म्यूचुअल फंड निवेशक",
+    "retail_borrower":       "होम लोन उधारकर्ता",
+    "fixed_income_investor": "फिक्स्ड इनकम निवेशक",
+    "long_term_investor":    "दीर्घकालिक निवेशक",
+    "active_trader":         "सक्रिय ट्रेडर",
+    "salaried_taxpayer":     "वेतनभोगी करदाता",
+    "new_investor":          "नए निवेशक",
+    "business_owner":        "व्यवसाय स्वामी"
+  }
 }

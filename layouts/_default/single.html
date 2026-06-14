@@ -4,8 +4,9 @@
 {{- $sentiment := $params.sentiment | default "neutral" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- /* Persona UI label resolution — falls back to raw value if data file missing */}}
-{{- $personaLabels := site.Data.persona_labels | default dict }}
+{{- /* Persona UI label: resolve via language-aware data file */}}
+{{- $personaLabelsAll := site.Data.persona_labels | default dict }}
+{{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 {{- $primaryLabel := index $personaLabels $params.primary_persona | default ($params.primary_persona | default "") }}
 
 {{- $sentimentLabel   := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
@@ -16,7 +17,7 @@
 
 <article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}">
 
-  {{/* ── Sentiment accent bar (replaces left-border anti-pattern) ── */}}
+  {{/* ── Sentiment accent bar ── */}}
   <div class="fyf-accent-bar s-{{ $sentiment }}"></div>
 
   <header class="fyf-post-header">
@@ -27,19 +28,19 @@
       <span class="fyf-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
 
       {{/* Score badge — hover reveals sub-score tooltip */}}
-      <span class="fyf-badge fyf-badge-score" tabindex="0" aria-describedby="score-tooltip-{{ $score }}">
+      <span class="fyf-badge fyf-badge-score" tabindex="0" aria-describedby="score-tooltip-{{ .File.UniqueID }}">
         {{- if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10
-        <span class="fyf-score-tooltip" id="score-tooltip-{{ $score }}" role="tooltip">
-          <span class="fyf-score-tooltip-title">Impact breakdown</span>
-          <span class="fyf-score-row"><span>Reach</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>Immediacy</span><span>{{ $params.immediacy_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>Materiality</span><span>{{ $params.materiality_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>Surprise</span><span>{{ $params.surprise_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>Source</span><span>{{ $params.source_score | default "–" }}/2</span></span>
+        <span class="fyf-score-tooltip" id="score-tooltip-{{ .File.UniqueID }}" role="tooltip">
+          <span class="fyf-score-tooltip-title">{{ if $isHindi }}स्कोर विवरण{{ else }}Impact breakdown{{ end }}</span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}पहुंच{{ else }}Reach{{ end }}</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}तात्कालिकता{{ else }}Immediacy{{ end }}</span><span>{{ $params.immediacy_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}महत्त्व{{ else }}Materiality{{ end }}</span><span>{{ $params.materiality_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}अप्रत्याशित{{ else }}Surprise{{ end }}</span><span>{{ $params.surprise_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}स्रोत{{ else }}Source{{ end }}</span><span>{{ $params.source_score | default "–" }}/2</span></span>
         </span>
       </span>
 
-      {{/* Persona pill — human-readable label, not snake_case */}}
+      {{/* Persona pill */}}
       {{- if $primaryLabel }}
       <span class="fyf-persona-pill">
         <span class="fyf-persona-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
@@ -102,7 +103,7 @@
   padding: 0 1rem 4rem;
 }
 
-/* ── Sentiment accent bar (full-width top stripe, not left border) ── */
+/* ── Sentiment accent bar ── */
 .fyf-accent-bar {
   height: 4px;
   width: 100%;
@@ -126,7 +127,7 @@
   flex-wrap: wrap;
 }
 
-/* Badges — base */
+/* Badges */
 .fyf-badge {
   font-size: 0.63rem;
   font-weight: 700;
@@ -143,7 +144,7 @@
 .fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.09); }
 .fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.09); }
 
-/* Score badge — tooltip container */
+/* Score badge */
 .fyf-badge-score {
   position: relative;
   color: var(--fyf-muted, #6B7280);
@@ -154,7 +155,7 @@
 .fyf-badge-score:focus .fyf-score-tooltip {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Score tooltip */
@@ -207,10 +208,7 @@
   gap: 1rem;
   font-variant-numeric: tabular-nums;
 }
-.fyf-score-row span:last-child {
-  font-weight: 700;
-  opacity: 0.9;
-}
+.fyf-score-row span:last-child { font-weight: 700; opacity: 0.9; }
 
 /* Persona pill */
 .fyf-persona-pill {
@@ -254,7 +252,7 @@
   text-decoration: none;
 }
 
-/* ── ENGLISH title ── */
+/* English title */
 .fyf-post-title {
   font-family: 'Source Serif 4', Georgia, serif;
   font-size: clamp(1.45rem, 3vw, 2.1rem);
@@ -265,7 +263,7 @@
   margin: 0 0 0.6rem;
 }
 
-/* ── HINDI title ── */
+/* Hindi title */
 .fyf-hindi .fyf-post-title {
   font-family: 'Yatra One', serif;
   font-weight: 400;
@@ -290,7 +288,7 @@
 /* Body */
 .fyf-post-body { margin-top: 2rem; }
 
-/* ── ENGLISH body ── */
+/* English body */
 .fyf-post-body h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.63rem;
@@ -309,7 +307,7 @@
   margin: 0 0 0.75rem;
 }
 
-/* ── HINDI body ── */
+/* Hindi body */
 .fyf-hindi .fyf-post-body h2 {
   font-family: 'Yatra One', serif;
   font-weight: 400;
@@ -374,14 +372,22 @@
   letter-spacing: 0.02em;
 }
 
-/* ── Mobile ── */
+/* Mobile */
 @media (max-width: 600px) {
   .fyf-post-title              { font-size: 1.3rem; }
   .fyf-post-body p             { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body p  { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body h2 { font-size: 1rem; }
-  .fyf-score-tooltip           { left: 0; transform: translateY(-4px); }
-  .fyf-score-tooltip::before   { left: 30px; }
+  /* F2 — mobile tooltip: anchor to left edge of badge, not centre, to prevent viewport overflow */
+  .fyf-score-tooltip {
+    left: 0;
+    transform: translateY(-4px);
+  }
+  .fyf-badge-score:hover .fyf-score-tooltip,
+  .fyf-badge-score:focus .fyf-score-tooltip {
+    transform: translateY(0);
+  }
+  .fyf-score-tooltip::before { left: 30px; }
 }
 </style>
 {{- end }}
