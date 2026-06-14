@@ -4,28 +4,60 @@
 {{- $sentiment := $params.sentiment | default "neutral" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- $sentimentLabel := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
+{{- /* Persona UI label resolution — falls back to raw value if data file missing */}}
+{{- $personaLabels := site.Data.persona_labels | default dict }}
+{{- $primaryLabel := index $personaLabels $params.primary_persona | default ($params.primary_persona | default "") }}
+
+{{- $sentimentLabel   := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
 {{- $sentimentLabelHi := dict "positive" "सकारात्मक" "negative" "नकारात्मक" "neutral" "तटस्थ" "watch" "सावधान" }}
-{{- $sentimentIcon := dict "positive" "↗️" "negative" "↘️" "neutral" "→" "watch" "⚠️" }}
+{{- $sentimentIcon    := dict "positive" "↗" "negative" "↘" "neutral" "→" "watch" "⚠" }}
 {{- $icon  := index $sentimentIcon $sentiment | default "→" }}
 {{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabel $sentiment | default ($sentiment | title)) }}
 
 <article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}">
 
-  <header class="fyf-post-header s-{{ $sentiment }}">
+  {{/* ── Sentiment accent bar (replaces left-border anti-pattern) ── */}}
+  <div class="fyf-accent-bar s-{{ $sentiment }}"></div>
+
+  <header class="fyf-post-header">
 
     <div class="fyf-post-topbar">
+
+      {{/* Sentiment badge */}}
       <span class="fyf-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
-      <span class="fyf-badge fyf-badge-score">{{ if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10</span>
+
+      {{/* Score badge — hover reveals sub-score tooltip */}}
+      <span class="fyf-badge fyf-badge-score" tabindex="0" aria-describedby="score-tooltip-{{ $score }}">
+        {{- if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10
+        <span class="fyf-score-tooltip" id="score-tooltip-{{ $score }}" role="tooltip">
+          <span class="fyf-score-tooltip-title">Impact breakdown</span>
+          <span class="fyf-score-row"><span>Reach</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>Immediacy</span><span>{{ $params.immediacy_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>Materiality</span><span>{{ $params.materiality_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>Surprise</span><span>{{ $params.surprise_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>Source</span><span>{{ $params.source_score | default "–" }}/2</span></span>
+        </span>
+      </span>
+
+      {{/* Persona pill — human-readable label, not snake_case */}}
+      {{- if $primaryLabel }}
+      <span class="fyf-persona-pill">
+        <span class="fyf-persona-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
+        {{ $primaryLabel }}
+      </span>
+      {{- end }}
+
+      {{/* Language switch */}}
       {{- if .Translations }}
       <div class="fyf-lang-switch">
         {{- range .Translations }}
         <a href="{{ .Permalink }}" class="fyf-lang-btn" hreflang="{{ .Language.Lang }}">
-          {{ if eq .Language.Lang "hi" }}🇮🇳 हिंदी में पढ़ें{{ else }}🇬🇧 Read in English{{ end }}
+          {{ if eq .Language.Lang "hi" }}🇮🇳 हिंदी{{ else }}🇬🇧 English{{ end }}
         </a>
         {{- end }}
       </div>
       {{- end }}
+
     </div>
 
     <h1 class="fyf-post-title">{{ .Title }}</h1>
@@ -34,9 +66,8 @@
       <span>{{ .Date.Format "2 January 2006" }}</span>
       <span class="fyf-sep">·</span>
       <span>{{ .Date.Format "3:04 PM" }} IST</span>
-      {{- if $params.primary_persona }}<span class="fyf-sep">·</span><span>{{ $params.primary_persona }}</span>{{- end }}
       {{- if $params.category }}<span class="fyf-sep">·</span><span>{{ $params.category }}</span>{{- end }}
-      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
+      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon | replace "_" " " }}</span>{{- end }}
     </div>
 
   </header>
@@ -68,31 +99,36 @@
 .fyf-post {
   max-width: 680px;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  padding: 0 1rem 4rem;
 }
 
-/* Header */
-.fyf-post-header {
-  border-left: 3px solid #94A3B8;
-  padding-left: 1.1rem;
-  margin-bottom: 2rem;
+/* ── Sentiment accent bar (full-width top stripe, not left border) ── */
+.fyf-accent-bar {
+  height: 4px;
+  width: 100%;
+  margin-bottom: 1.75rem;
+  border-radius: 0;
 }
-.fyf-post-header.s-positive { border-left-color: #059669; }
-.fyf-post-header.s-negative { border-left-color: #DC2626; }
-.fyf-post-header.s-watch    { border-left-color: #D97706; }
+.fyf-accent-bar.s-positive { background: #059669; }
+.fyf-accent-bar.s-negative { background: #DC2626; }
+.fyf-accent-bar.s-neutral  { background: #94A3B8; }
+.fyf-accent-bar.s-watch    { background: var(--fyf-amber, #D97706); }
+
+/* Header */
+.fyf-post-header { margin-bottom: 2rem; }
 
 /* Top bar */
 .fyf-post-topbar {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 0.75rem;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
   flex-wrap: wrap;
 }
 
-/* Badges */
+/* Badges — base */
 .fyf-badge {
-  font-size: 0.65rem;
+  font-size: 0.63rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -100,17 +136,108 @@
   border-radius: 99px;
   background: rgba(22, 78, 99, 0.07);
   color: var(--fyf-navy, #164E63);
+  white-space: nowrap;
 }
-.fyf-badge.s-positive { color: #059669; background: rgba(5,150,105,0.08); }
-.fyf-badge.s-negative { color: #DC2626; background: rgba(220,38,38,0.08); }
-.fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.08); }
-.fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.08); }
-.fyf-badge-score      { color: var(--fyf-muted, #6B7280); background: var(--code-bg); }
+.fyf-badge.s-positive { color: #059669; background: rgba(5,150,105,0.09); }
+.fyf-badge.s-negative { color: #DC2626; background: rgba(220,38,38,0.09); }
+.fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.09); }
+.fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.09); }
 
-/* Translation button */
+/* Score badge — tooltip container */
+.fyf-badge-score {
+  position: relative;
+  color: var(--fyf-muted, #6B7280);
+  background: var(--code-bg, rgba(22,78,99,0.05));
+  cursor: default;
+}
+.fyf-badge-score:hover .fyf-score-tooltip,
+.fyf-badge-score:focus .fyf-score-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Score tooltip */
+.fyf-score-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 100;
+  min-width: 180px;
+  background: var(--fyf-navy, #164E63);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.fyf-score-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--fyf-navy, #164E63);
+}
+.fyf-score-tooltip-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin-bottom: 0.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  padding-bottom: 0.25rem;
+}
+.fyf-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.fyf-score-row span:last-child {
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Persona pill */
+.fyf-persona-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.63rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  background: rgba(22, 78, 99, 0.08);
+  color: var(--fyf-navy, #164E63);
+  border: 1px solid rgba(22, 78, 99, 0.15);
+  white-space: nowrap;
+}
+.fyf-persona-for {
+  font-weight: 400;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.58rem;
+}
+
+/* Language switch */
 .fyf-lang-switch { margin-left: auto; }
 .fyf-lang-btn {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   padding: 0.22rem 0.7rem;
   border-radius: 6px;
@@ -138,7 +265,7 @@
   margin: 0 0 0.6rem;
 }
 
-/* ── HINDI title — Yatra One ── */
+/* ── HINDI title ── */
 .fyf-hindi .fyf-post-title {
   font-family: 'Yatra One', serif;
   font-weight: 400;
@@ -149,7 +276,7 @@
 
 /* Byline */
 .fyf-post-byline {
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: var(--fyf-muted, #6B7280);
   display: flex;
   flex-wrap: wrap;
@@ -166,7 +293,7 @@
 /* ── ENGLISH body ── */
 .fyf-post-body h2 {
   font-family: 'Inter', sans-serif;
-  font-size: 0.65rem;
+  font-size: 0.63rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -182,7 +309,7 @@
   margin: 0 0 0.75rem;
 }
 
-/* ── HINDI body — Yatra One headings, Tiro Devanagari Hindi paragraphs ── */
+/* ── HINDI body ── */
 .fyf-hindi .fyf-post-body h2 {
   font-family: 'Yatra One', serif;
   font-weight: 400;
@@ -211,7 +338,7 @@
   gap: 0.45rem;
 }
 .fyf-sources-label {
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -219,7 +346,7 @@
   margin-right: 0.2rem;
 }
 .fyf-source-pill {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--fyf-navy, #164E63);
   text-decoration: none;
   background: rgba(22, 78, 99, 0.06);
@@ -238,7 +365,7 @@
   gap: 0.35rem;
 }
 .fyf-tag {
-  font-size: 0.63rem;
+  font-size: 0.61rem;
   font-weight: 500;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
@@ -253,6 +380,8 @@
   .fyf-post-body p             { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body p  { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body h2 { font-size: 1rem; }
+  .fyf-score-tooltip           { left: 0; transform: translateY(-4px); }
+  .fyf-score-tooltip::before   { left: 30px; }
 }
 </style>
 {{- end }}
