@@ -1,22 +1,34 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-{{- $allPosts := slice }}
+{{- $personaLabels := site.Data.persona_labels | default dict }}
+
+{{- /* Partition posts into Impact posts and More Reads */}}
+{{- $impactPosts := slice }}
+{{- $moreReads   := slice }}
 {{- range where site.RegularPages "Section" "news" }}
+  {{- $ga := .Params.gate_action | default "" }}
+  {{- $isLang := true }}
   {{- if $isHindi }}
-    {{- if strings.HasSuffix .File.BaseFileName ".hi" }}
-      {{- $allPosts = $allPosts | append . }}
-    {{- end }}
+    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}{{- $isLang = false }}{{- end }}
   {{- else }}
-    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
-      {{- $allPosts = $allPosts | append . }}
+    {{- if strings.HasSuffix .File.BaseFileName ".hi" }}{{- $isLang = false }}{{- end }}
+  {{- end }}
+  {{- if $isLang }}
+    {{- if eq $ga "More Reads" }}
+      {{- $moreReads = $moreReads | append . }}
+    {{- else if ne $ga "Skip entirely" }}
+      {{- $impactPosts = $impactPosts | append . }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $sorted := sort $allPosts "Date" "desc" }}
+{{- $sorted     := sort $impactPosts "Date" "desc" }}
+{{- $sortedMore := sort $moreReads   "Date" "desc" }}
 
 <div class="fyf-feed">
+
+  {{/* ── Impact posts ── */}}
   {{- if not $sorted }}
-    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है। जल्द वापस देखें।{{ else }}No posts yet. Check back soon.{{ end }}</p>
+    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्т नहीं है।{{ else }}No posts yet. Check back soon.{{ end }}</p>
   {{- else }}
     {{- $currentDay := "" }}
     {{- range $sorted }}
@@ -27,19 +39,33 @@
           <div class="fyf-day-label">{{ .Date | time.Format "Monday, 2 January 2006" }}</div>
         {{- $currentDay = $day }}
       {{- end }}
+
       {{- $sentiment := .Params.sentiment | default "neutral" }}
-      {{- $score    := .Params.editorial_impact_score | default 0 }}
+      {{- $score     := .Params.editorial_impact_score | default 0 }}
+      {{- $persona   := .Params.primary_persona | default "" }}
+      {{- $uiLabel   := index $personaLabels $persona | default "" }}
+      {{- $scoreTier := "tier-low" }}
+      {{- if ge $score 9 }}{{- $scoreTier = "tier-blog" }}
+      {{- else if ge $score 7 }}{{- $scoreTier = "tier-premium" }}
+      {{- else if ge $score 5 }}{{- $scoreTier = "tier-impact" }}
+      {{- end }}
+
       <a class="fyf-card" href="{{ .Permalink }}">
-        <div class="fyf-card-accent s-{{ $sentiment }}"></div>
+        <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
         <div class="fyf-card-inner">
           <div class="fyf-card-eyebrow">
             <span class="fyf-card-time">{{ .Date.Format "3:04 PM" }} IST</span>
-            <span class="fyf-card-persona">{{ .Params.primary_persona }}</span>
-            <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
+            {{- if $uiLabel }}
+            <span class="fyf-card-persona-pill">
+              <span class="fyf-card-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
+              {{ $uiLabel }}
+            </span>
+            {{- end }}
+            <span class="fyf-card-score {{ $scoreTier }}">{{ $score }}/10</span>
           </div>
           <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ .Title }}</h2>
           <div class="fyf-card-chips">
-            {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
+            {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon | replace "_" " " }}</span>{{- end }}
             {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
           </div>
         </div>
@@ -47,6 +73,46 @@
     {{- end }}
     {{- if ne $currentDay "" }}</div>{{- end }}
   {{- end }}
+
+  {{/* ── More Reads section ── */}}
+  {{- if $sortedMore }}
+  {{- /* Group by category */}}
+  {{- $byCategory := dict }}
+  {{- range $sortedMore }}
+    {{- $cat := .Params.category | default "general" }}
+    {{- $existing := index $byCategory $cat | default slice }}
+    {{- $byCategory = merge $byCategory (dict $cat ($existing | append .)) }}
+  {{- end }}
+
+  <section class="fyf-more-reads">
+    <div class="fyf-more-reads-header">
+      <span class="fyf-more-reads-label">{{ if $isHindi }}और पढ़ें{{ else }}More Reads{{ end }}</span>
+      <span class="fyf-more-reads-count">{{ len $sortedMore }}</span>
+    </div>
+    <div class="fyf-more-reads-grid">
+      {{- range $cat, $items := $byCategory }}
+      <div class="fyf-more-reads-col">
+        <div class="fyf-more-reads-cat">{{ $cat | title }}</div>
+        <ul class="fyf-more-reads-list">
+          {{- range $items }}
+          <li>
+            {{- if .Params.more_reads_url }}
+            <a href="{{ .Params.more_reads_url }}" class="fyf-more-link" target="_blank" rel="noopener noreferrer">
+              {{ .Params.more_reads_title | default .Title }}
+            </a>
+            {{- if .Params.more_reads_one_liner }}
+            <span class="fyf-more-liner">{{ .Params.more_reads_one_liner }}</span>
+            {{- end }}
+            {{- end }}
+          </li>
+          {{- end }}
+        </ul>
+      </div>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
 </div>
 
 <style>
@@ -57,9 +123,10 @@
 }
 .fyf-empty { color: var(--fyf-muted, #6B7280); padding: 2rem 0; }
 
+/* Day block */
 .fyf-day-block { margin-bottom: 2.25rem; }
 .fyf-day-label {
-  font-size: 0.65rem;
+  font-size: 0.63rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -70,8 +137,10 @@
   display: inline-block;
 }
 
+/* Card */
 .fyf-card {
   display: flex;
+  flex-direction: column;
   text-decoration: none;
   color: inherit;
   background: var(--entry);
@@ -87,47 +156,67 @@
   text-decoration: none;
 }
 
-/* Left sentiment accent */
-.fyf-card-accent { width: 3px; flex-shrink: 0; }
-.s-positive { background: #059669; }
-.s-negative { background: #DC2626; }
-.s-neutral  { background: #94A3B8; }
-.s-watch    { background: var(--fyf-amber, #D97706); }
+/* Top sentiment stripe (replaces left accent bar) */
+.fyf-card-topstripe { height: 3px; width: 100%; flex-shrink: 0; }
+.fyf-card-topstripe.s-positive { background: #059669; }
+.fyf-card-topstripe.s-negative { background: #DC2626; }
+.fyf-card-topstripe.s-neutral  { background: #94A3B8; }
+.fyf-card-topstripe.s-watch    { background: var(--fyf-amber, #D97706); }
 
 .fyf-card-inner { padding: 0.85rem 1rem; flex: 1; min-width: 0; }
 
+/* Eyebrow row */
 .fyf-card-eyebrow {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.3rem;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+  flex-wrap: wrap;
 }
 .fyf-card-time {
-  font-size: 0.63rem;
+  font-size: 0.61rem;
   font-weight: 500;
   color: var(--fyf-muted, #6B7280);
   font-variant-numeric: tabular-nums;
 }
-.fyf-card-persona {
-  font-size: 0.63rem;
+
+/* Persona pill on card */
+.fyf-card-persona-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.61rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--fyf-muted, #6B7280);
-  margin-left: auto;
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+  background: rgba(22, 78, 99, 0.07);
+  color: var(--fyf-navy, #164E63);
+  white-space: nowrap;
 }
+.fyf-card-for {
+  font-weight: 400;
+  opacity: 0.55;
+  font-size: 0.57rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Score badge — tiered colour */
 .fyf-card-score {
-  font-size: 0.63rem;
+  font-size: 0.61rem;
   font-weight: 700;
   padding: 0.1rem 0.4rem;
   border-radius: 99px;
-  background: var(--code-bg);
+  background: var(--code-bg, rgba(22,78,99,0.05));
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }
-.fyf-card-score.s-positive { color: #059669; }
-.fyf-card-score.s-negative { color: #DC2626; }
-.fyf-card-score.s-neutral  { color: #64748B; }
-.fyf-card-score.s-watch    { color: var(--fyf-amber, #D97706); }
+.fyf-card-score.tier-low     { color: #94A3B8; }
+.fyf-card-score.tier-impact  { color: var(--fyf-navy, #164E63); }
+.fyf-card-score.tier-premium { color: #164E63; font-weight: 800; }
+.fyf-card-score.tier-blog    { color: var(--fyf-amber, #D97706); font-weight: 800; }
 
+/* Card title */
 .fyf-card-title {
   font-family: 'Source Serif 4', Georgia, serif;
   font-size: 1.05rem;
@@ -140,24 +229,92 @@
   font-family: 'Noto Sans Devanagari', sans-serif;
   font-weight: 600;
   font-size: 1rem;
-  color: var(--fyf-navy, #164E63);
 }
 
+/* Chips */
 .fyf-card-chips { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .fyf-chip {
-  font-size: 0.6rem;
+  font-size: 0.59rem;
   font-weight: 500;
-  background: rgba(22, 78, 99, 0.07);
+  background: rgba(22, 78, 99, 0.06);
   color: var(--fyf-navy, #164E63);
-  padding: 0.1rem 0.45rem;
+  padding: 0.1rem 0.42rem;
   border-radius: 4px;
   text-transform: capitalize;
   letter-spacing: 0.02em;
 }
 
+/* ── More Reads section ── */
+.fyf-more-reads {
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--fyf-border, rgba(22,78,99,0.12));
+}
+.fyf-more-reads-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.fyf-more-reads-label {
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fyf-navy, #164E63);
+}
+.fyf-more-reads-count {
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: rgba(22, 78, 99, 0.09);
+  color: var(--fyf-navy, #164E63);
+  padding: 0.1rem 0.45rem;
+  border-radius: 99px;
+}
+.fyf-more-reads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 1.25rem;
+}
+.fyf-more-reads-col {}
+.fyf-more-reads-cat {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fyf-muted, #6B7280);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--fyf-border, rgba(22,78,99,0.1));
+}
+.fyf-more-reads-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.fyf-more-reads-list li { display: flex; flex-direction: column; gap: 0.15rem; }
+.fyf-more-link {
+  font-size: 0.82rem;
+  color: var(--fyf-navy, #164E63);
+  text-decoration: none;
+  font-weight: 500;
+  line-height: 1.4;
+  transition: color 0.12s;
+}
+.fyf-more-link:hover { color: var(--fyf-amber, #D97706); text-decoration: none; }
+.fyf-more-liner {
+  font-size: 0.7rem;
+  color: var(--fyf-muted, #6B7280);
+  line-height: 1.4;
+}
+
+/* ── Mobile ── */
 @media (max-width: 600px) {
-  .fyf-card-title { font-size: 0.95rem; }
-  .fyf-card-persona { display: none; }
+  .fyf-card-title   { font-size: 0.95rem; }
+  .fyf-more-reads-grid { grid-template-columns: 1fr; }
 }
 </style>
 {{- end }}

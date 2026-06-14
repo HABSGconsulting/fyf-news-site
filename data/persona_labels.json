@@ -1,0 +1,10 @@
+{
+  "mutual_fund_investor":  "Mutual Fund Investors",
+  "retail_borrower":       "Retail Borrowers",
+  "fixed_income_investor": "Fixed Income Seekers",
+  "long_term_investor":    "Core Equity Investors",
+  "active_trader":         "Active Traders",
+  "salaried_taxpayer":     "Taxpayers",
+  "new_investor":          "New Investors",
+  "business_owner":        "Business Owners & Gig Earners"
+}
