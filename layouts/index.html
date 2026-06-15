@@ -3,9 +3,8 @@
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 
-{{- /* Partition posts into Impact posts and More Reads */}}
+{{- /* Partition impact posts only (More Reads now come from data/more-reads/ YAML) */}}
 {{- $impactPosts := slice }}
-{{- $moreReads   := slice }}
 {{- range where site.RegularPages "Section" "news" }}
   {{- $ga := .Params.gate_action | default "" }}
   {{- $isLang := true }}
@@ -15,15 +14,26 @@
     {{- if strings.HasSuffix .File.BaseFileName ".hi" }}{{- $isLang = false }}{{- end }}
   {{- end }}
   {{- if $isLang }}
-    {{- if eq $ga "More Reads" }}
-      {{- $moreReads = $moreReads | append . }}
-    {{- else if ne $ga "Skip entirely" }}
+    {{- if and (ne $ga "Skip entirely") (ne $ga "More Reads") }}
       {{- $impactPosts = $impactPosts | append . }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $sorted     := sort $impactPosts "Date" "desc" }}
-{{- $sortedMore := sort $moreReads   "Date" "desc" }}
+{{- $sorted := sort $impactPosts "Date" "desc" }}
+
+{{- /* Collect More Reads items from data/more-reads/YYYY/MM/*.yaml */}}
+{{- $allMoreReads := slice }}
+{{- $mrData := index site.Data "more-reads" | default dict }}
+{{- range $year, $months := $mrData }}
+  {{- range $month, $files := $months }}
+    {{- range $filename, $data := $files }}
+      {{- $items := $data.items | default slice }}
+      {{- range $items }}
+        {{- $allMoreReads = $allMoreReads | append . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 
 <div class="fyf-feed">
 
@@ -75,23 +85,21 @@
     {{- if ne $currentDay "" }}</div>{{- end }}
   {{- end }}
 
-  {{/* ── More Reads section ── */}}
+  {{/* ── More Reads section — sourced from data/more-reads/*.yaml ── */}}
   <section class="fyf-more-reads">
     <div class="fyf-more-reads-header">
       <span class="fyf-more-reads-label">{{ if $isHindi }}और पढ़ें{{ else }}More Reads{{ end }}</span>
-      {{- if $sortedMore }}
-      <span class="fyf-more-reads-count">{{ len $sortedMore }}</span>
+      {{- if $allMoreReads }}
+      <span class="fyf-more-reads-count">{{ len $allMoreReads }}</span>
       {{- end }}
     </div>
 
-    {{- if not $sortedMore }}
-    {{/* F4 — Empty state */}}
+    {{- if not $allMoreReads }}
     <p class="fyf-more-reads-empty">{{ if $isHindi }}आज कोई अतिरिक्त लेख नहीं है।{{ else }}No additional reads today.{{ end }}</p>
     {{- else }}
-    {{- /* Group by category */}}
     {{- $byCategory := dict }}
-    {{- range $sortedMore }}
-      {{- $cat := .Params.category | default "general" }}
+    {{- range $allMoreReads }}
+      {{- $cat := .category | default "general" }}
       {{- $existing := index $byCategory $cat | default slice }}
       {{- $byCategory = merge $byCategory (dict $cat ($existing | append .)) }}
     {{- end }}
@@ -103,13 +111,11 @@
         <ul class="fyf-more-reads-list">
           {{- range $items }}
           <li>
-            {{- if .Params.more_reads_url }}
-            <a href="{{ .Params.more_reads_url }}" class="fyf-more-link" target="_blank" rel="noopener noreferrer">
-              {{ .Params.more_reads_title | default .Title }}
+            <a href="{{ .url }}" class="fyf-more-link" target="_blank" rel="noopener noreferrer">
+              {{ .title }}
             </a>
-            {{- if .Params.more_reads_one_liner }}
-            <span class="fyf-more-liner">{{ .Params.more_reads_one_liner }}</span>
-            {{- end }}
+            {{- if .one_liner }}
+            <span class="fyf-more-liner">{{ .one_liner }}</span>
             {{- end }}
           </li>
           {{- end }}
@@ -162,7 +168,6 @@
   transform: translateY(-1px);
   text-decoration: none;
 }
-/* F3 — :active tap state for mobile feedback */
 .fyf-card:active {
   transform: scale(0.99);
   box-shadow: 0 1px 6px rgba(22, 78, 99, 0.08);
@@ -214,7 +219,7 @@
   letter-spacing: 0.05em;
 }
 
-/* Score badge — tiered colour */
+/* Score badge */
 .fyf-card-score {
   font-size: 0.61rem;
   font-weight: 700;
@@ -284,7 +289,6 @@
   padding: 0.1rem 0.45rem;
   border-radius: 99px;
 }
-/* F4 — Empty state */
 .fyf-more-reads-empty {
   font-size: 0.82rem;
   color: var(--fyf-muted, #6B7280);
