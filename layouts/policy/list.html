@@ -1,21 +1,30 @@
 {{- define "main" }}
+{{- $isHindi := eq site.Language.Lang "hi" }}
 {{- $allCards := slice }}
 {{- range where site.RegularPages "Section" "policy" }}
-  {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
-    {{- $allCards = $allCards | append . }}
+  {{- if $isHindi }}
+    {{/* Hindi view: include only .hi.md files (Lang == "hi") */}}
+    {{- if eq .Language.Lang "hi" }}
+      {{- $allCards = $allCards | append . }}
+    {{- end }}
+  {{- else }}
+    {{/* English view: exclude .hi.md translations */}}
+    {{- if eq .Language.Lang "en" }}
+      {{- $allCards = $allCards | append . }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $sorted := sort $allCards "Date" "desc" }}
 
-<div class="fyf-policy-page">
+<div class="fyf-policy-page{{ if $isHindi }} fyf-hindi{{ end }}">
 
   <div class="fyf-policy-header">
-    <h1 class="fyf-policy-title">Policy Desk</h1>
-    <p class="fyf-policy-subtitle">Macro intelligence and regulatory risk synthesis. Updated intraday.</p>
+    <h1 class="fyf-policy-title">{{ if $isHindi }}पॉलिसी डेस्क{{ else }}Policy Desk{{ end }}</h1>
+    <p class="fyf-policy-subtitle">{{ if $isHindi }}मैक्रो इंटेलिजेंस और नियामक जोखिम विश्लेषण। इंट्राडे अपडेट।{{ else }}Macro intelligence and regulatory risk synthesis. Updated intraday.{{ end }}</p>
   </div>
 
   {{- if not $sorted }}
-    <p class="fyf-policy-empty">No policy cards yet. Check back soon.</p>
+    <p class="fyf-policy-empty">{{ if $isHindi }}अभी कोई पॉलिसी कार्ड नहीं है। जल्द वापस देखें।{{ else }}No policy cards yet. Check back soon.{{ end }}</p>
   {{- else }}
     <div class="fyf-policy-feed">
       {{- range $sorted }}
@@ -52,7 +61,7 @@
             {{/* KEY SHIFT badge */}}
             {{- if $mat }}
             <div class="fyf-pc-keyshift">
-              <span class="fyf-pc-keyshift-badge">⚠️ KEY MACRO SHIFT</span>
+              <span class="fyf-pc-keyshift-badge">{{ if $isHindi }}⚠️ प्रमुख मैक्रो बदलाव{{ else }}⚠️ KEY MACRO SHIFT{{ end }}</span>
               {{- if $matReason }}
               <span class="fyf-pc-keyshift-reason">{{ $matReason }}</span>
               {{- end }}
@@ -67,19 +76,19 @@
             <div class="fyf-pc-triblock">
               {{- if $ctx }}
               <div class="fyf-pc-tri-row">
-                <span class="fyf-pc-tri-label">Structural Target &amp; Context</span>
+                <span class="fyf-pc-tri-label">{{ if $isHindi }}संरचनात्मक लक्ष्य और संदर्भ{{ else }}Structural Target &amp; Context{{ end }}</span>
                 <p class="fyf-pc-tri-text">{{ $ctx }}</p>
               </div>
               {{- end }}
               {{- if $mech }}
               <div class="fyf-pc-tri-row">
-                <span class="fyf-pc-tri-label">Execution Mechanism</span>
+                <span class="fyf-pc-tri-label">{{ if $isHindi }}क्रियान्वयन तंत्र{{ else }}Execution Mechanism{{ end }}</span>
                 <p class="fyf-pc-tri-text">{{ $mech }}</p>
               </div>
               {{- end }}
               {{- if $fwd }}
               <div class="fyf-pc-tri-row fyf-pc-tri-row--outlook">
-                <span class="fyf-pc-tri-label fyf-pc-tri-label--outlook">Macro Outlook (12–36 Months)</span>
+                <span class="fyf-pc-tri-label fyf-pc-tri-label--outlook">{{ if $isHindi }}मैक्रो आउटलुक (12–36 माह){{ else }}Macro Outlook (12–36 Months){{ end }}</span>
                 <p class="fyf-pc-tri-text fyf-pc-tri-text--outlook">{{ $fwd }}</p>
               </div>
               {{- end }}
@@ -89,7 +98,7 @@
             {{/* Market lens — only for KEY SHIFT items */}}
             {{- if and $mat $marketLens }}
             <div class="fyf-pc-marketlens">
-              <span class="fyf-pc-ml-label">Market Lens (12–18M)</span>
+              <span class="fyf-pc-ml-label">{{ if $isHindi }}बाजार दृष्टि (12–18 माह){{ else }}Market Lens (12–18M){{ end }}</span>
               <span class="fyf-pc-ml-text">{{ $marketLens }}</span>
             </div>
             {{- end }}
@@ -98,7 +107,7 @@
             <div class="fyf-pc-meta">
               {{- if $personas }}
               <div class="fyf-pc-meta-group">
-                <span class="fyf-pc-meta-label">Who should care</span>
+                <span class="fyf-pc-meta-label">{{ if $isHindi }}किसे ध्यान देना चाहिए{{ else }}Who should care{{ end }}</span>
                 <div class="fyf-pc-chips">
                   {{- range $personas }}
                   <span class="fyf-pc-chip fyf-pc-chip--persona">{{ . }}</span>
@@ -108,7 +117,7 @@
               {{- end }}
               {{- if $sectors }}
               <div class="fyf-pc-meta-group">
-                <span class="fyf-pc-meta-label">Sectors</span>
+                <span class="fyf-pc-meta-label">{{ if $isHindi }}सेक्टर{{ else }}Sectors{{ end }}</span>
                 <div class="fyf-pc-chips">
                   {{- range $sectors }}
                   <span class="fyf-pc-chip fyf-pc-chip--sector">#{{ . }}</span>
@@ -120,10 +129,10 @@
 
             {{/* Footer: desk weight + source link */}}
             <div class="fyf-pc-footer">
-              <span class="fyf-pc-score">Desk Weight: <strong>{{ $score }}/10</strong></span>
+              <span class="fyf-pc-score">{{ if $isHindi }}डेस्क भार{{ else }}Desk Weight{{ end }}: <strong>{{ $score }}/10</strong></span>
               {{- if $source }}
               <a href="{{ $source }}" class="fyf-pc-source" target="_blank" rel="noopener noreferrer">
-                Verify Source Document &#x2197;
+                {{ if $isHindi }}स्रोत दस्तावेज़ देखें &#x2197;{{ else }}Verify Source Document &#x2197;{{ end }}
               </a>
               {{- end }}
             </div>
@@ -257,6 +266,12 @@
   line-height: 1.45;
   margin: 0 0 0.75rem;
 }
+.fyf-hindi .fyf-pc-headline {
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
 
 /* Tri-Partite Block */
 .fyf-pc-triblock {
@@ -288,6 +303,12 @@
 .fyf-pc-tri-text--outlook {
   font-weight: 500;
   color: #0F172A;
+}
+.fyf-hindi .fyf-pc-tri-text,
+.fyf-hindi .fyf-pc-tri-text--outlook {
+  font-family: 'Tiro Devanagari Hindi', serif;
+  font-size: 0.9rem;
+  line-height: 1.8;
 }
 
 .fyf-pc-marketlens {
