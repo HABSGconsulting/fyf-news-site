@@ -4,6 +4,9 @@ title: FundYourFreedom News
 theme: PaperMod
 timeZone: Asia/Kolkata
 
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: false
+
 pagination:
   pagerSize: 20
 
@@ -40,6 +43,7 @@ languages:
   en:
     languageName: English
     weight: 1
+    contentDir: content
     params:
       mainSections:
         - news
