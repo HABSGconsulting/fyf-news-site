@@ -26,6 +26,9 @@ params:
 
 menu:
   main:
+    - name: Policy Desk
+      url: /policy/
+      weight: 5
     - name: Blog
       url: https://blog.fundyourfreedom.in
       weight: 10
