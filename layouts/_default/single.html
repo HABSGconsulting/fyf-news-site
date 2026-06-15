@@ -7,7 +7,10 @@
 {{- /* Persona UI label: resolve via language-aware data file */}}
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
-{{- $primaryLabel := index $personaLabels $params.primary_persona | default ($params.primary_persona | default "") }}
+{{- $primaryLabel := "" }}
+{{- if $params.primary_persona }}
+{{- $primaryLabel = index $personaLabels $params.primary_persona | default $params.primary_persona }}
+{{- end }}
 
 {{- $sentimentLabel   := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
 {{- $sentimentLabelHi := dict "positive" "सकारात्मक" "negative" "नकारात्मक" "neutral" "तटस्थ" "watch" "सावधान" }}
@@ -32,7 +35,7 @@
         {{- if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10
         <span class="fyf-score-tooltip" id="score-tooltip-{{ .File.UniqueID }}" role="tooltip">
           <span class="fyf-score-tooltip-title">{{ if $isHindi }}स्कोर विवरण{{ else }}Impact breakdown{{ end }}</span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}पहुंच{{ else }}Reach{{ end }}</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}पहुँच{{ else }}Reach{{ end }}</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
           <span class="fyf-score-row"><span>{{ if $isHindi }}तात्कालिकता{{ else }}Immediacy{{ end }}</span><span>{{ $params.immediacy_score | default "–" }}/2</span></span>
           <span class="fyf-score-row"><span>{{ if $isHindi }}महत्त्व{{ else }}Materiality{{ end }}</span><span>{{ $params.materiality_score | default "–" }}/2</span></span>
           <span class="fyf-score-row"><span>{{ if $isHindi }}अप्रत्याशित{{ else }}Surprise{{ end }}</span><span>{{ $params.surprise_score | default "–" }}/2</span></span>
@@ -40,7 +43,7 @@
         </span>
       </span>
 
-      {{/* Persona pill */}}
+      {{/* Persona pill — only shown for news posts that have primary_persona */}}
       {{- if $primaryLabel }}
       <span class="fyf-persona-pill">
         <span class="fyf-persona-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
