@@ -7,7 +7,7 @@ horizon: "Cyclical (1-3Y)"
 materiality_flag: false
 sentiment: "positive"
 relevance_score: 6
-source_url: "https://pib.gov.in/PressReleaseIframePage.aspx?PRID=2272713"
+source_url: "https://pib.gov.in/PressReleasePage.aspx?PRID=2272713"
 display_date: "15 Jun 2026, 12:03 PM IST"
 context_and_trigger: "Regional infrastructure deficit in cold-chain and processing facilities for the fisheries sector limits value-added exports."
 mechanism_of_impact: "Deploys budgetary capital for integrated processing infrastructure, creating a centralized hub for regional aquaculture value chains."

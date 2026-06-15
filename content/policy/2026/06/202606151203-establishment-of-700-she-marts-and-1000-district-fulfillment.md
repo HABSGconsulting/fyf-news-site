@@ -7,7 +7,7 @@ horizon: "Cyclical (1-3Y)"
 materiality_flag: false
 sentiment: "positive"
 relevance_score: 7
-source_url: "https://pib.gov.in/PressReleaseIframePage.aspx?PRID=2272821"
+source_url: "https://pib.gov.in/PressReleasePage.aspx?PRID=2272821"
 display_date: "15 Jun 2026, 12:03 PM IST"
 context_and_trigger: "Fragmented rural supply chains and lack of market access for SHG-produced goods limit the scalability of rural micro-enterprises."
 mechanism_of_impact: "Deploys physical logistics infrastructure (fulfillment centers) and retail outlets (She-Marts) to integrate rural SHG output into formal retail supply chains."

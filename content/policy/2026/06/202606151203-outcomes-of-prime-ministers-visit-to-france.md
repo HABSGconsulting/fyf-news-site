@@ -7,7 +7,7 @@ horizon: "Cyclical (1-3Y)"
 materiality_flag: false
 sentiment: "positive"
 relevance_score: 6
-source_url: "https://pib.gov.in/PressReleaseIframePage.aspx?PRID=2272812"
+source_url: "https://pib.gov.in/PressReleasePage.aspx?PRID=2272812"
 display_date: "15 Jun 2026, 12:03 PM IST"
 context_and_trigger: "Strategic necessity to diversify supply chains and secure critical technology partnerships amidst global geopolitical realignment."
 mechanism_of_impact: "Formalizes bilateral agreements across defense, energy, and technology sectors, creating a sovereign-backed pipeline for industrial cooperation."
