@@ -1,66 +1,64 @@
 ---
 # ── CORE ────────────────────────────────────────────────────────────────────
-title:           "Why your home loan might fall short due to property valuation gaps"
-title_hi:        "प्रॉपर्टी वैल्यूएशन के अंतर से कैसे कम हो सकता है आपका होम लोन"
+title:           "Why your home loan might fall short due to rising construction costs"
+title_hi:        "बढ़ती निर्माण लागत के कारण आपका होम लोन कम क्यों पड़ सकता है"
 date:            2026-06-17T12:58:15+05:30
 draft:           false
 content_type:    "news"
-category:        "Behavioral"
-sentiment:       "neutral"
-impact_horizon:  "Short Term"
-primary_persona: "retail_borrower"
+category:        "Real Estate"
+sentiment:       "negative"
+impact_horizon:  "Medium Term"
+primary_persona: "salaried_taxpayer"
 affected_personas:
-  - "retail_borrower"
-  - "Business Owner"
+  - "salaried_taxpayer"
+  - "long_term_investor"
 concepts:
-  - "circle_rate"
-  - "loan_to_value_ratio"
-  - "property_valuation"
   - "home_loan"
-  - "down_payment"
-concept_difficulty: "intermediate"
-premium:         true
+  - "construction_costs"
+  - "real_estate"
+concept_difficulty: "beginner"
+premium:         false
 push_notify:     false
 shareable:       true
-whatsapp_caption: "Buying a home? Don't let valuation gaps surprise you. Understand how circle rates and market value impact your home loan eligibility."
+whatsapp_caption: "Planning a home? Rising construction costs could mean your loan approval falls short. Read this."
 
 # ── RETAIL LENS ─────────────────────────────────────────────────────────────
-who_affected_en:    "Prospective homebuyers and those currently applying for a home loan."
-who_affected_hi:    "घर खरीदने वाले और होम लोन के लिए आवेदन करने वाले लोग।"
-what_changes_en:    "Lenders use the lower of the sale price or market valuation to determine your loan-to-value ratio, potentially reducing your sanctioned loan amount."
-what_changes_hi:    "बैंक लोन-टू-वैल्यू (LTV) अनुपात तय करने के लिए सेल प्राइस और मार्केट वैल्यू में से जो कम होता है, उसे आधार मानते हैं, जिससे लोन की राशि कम हो सकती है।"
-action_command_en:  "Request a formal property valuation from your lender early to identify potential funding gaps before finalizing your purchase agreement."
-action_command_hi:  "खरीद समझौता करने से पहले अपने लेंडर से प्रॉपर्टी का औपचारिक वैल्यूएशन करवाएं ताकि फंडिंग में आने वाली किसी भी कमी का पहले ही पता चल सके।"
+who_affected_en:    "Home buyers and those planning to take home loans in the current market."
+who_affected_hi:    "घर खरीदने वाले और वे जो वर्तमान बाजार में होम लोन लेने की योजना बना रहे हैं।"
+what_changes_en:    "Rising construction costs are increasing property prices, which may cause approved loan amounts to fall short of actual purchase requirements."
+what_changes_hi:    "बढ़ती निर्माण लागत संपत्ति की कीमतें बढ़ा रही है, जिससे स्वीकृत ऋण राशि वास्तविक खरीद आवश्यकताओं से कम हो सकती है।"
+action_command_en:  "Re-evaluate your home loan eligibility and budget considering current construction cost trends before finalizing a purchase."
+action_command_hi:  "खरीद को अंतिम रूप देने से पहले वर्तमान निर्माण लागत प्रवृत्तियों को ध्यान में रखते हुए अपनी होम लोन पात्रता और बजट का पुनर्मूल्यांकन करें।"
 
 # ── PRO LENS ─────────────────────────────────────────────────────────────────
 behavioral_risk:          "medium"
-advisor_talking_point_en: "I wanted to flag that property valuation gaps are a common reason for last-minute loan rejections. Please ensure your property's market value aligns with the lender's appraisal to avoid funding shortfalls."
-advisor_talking_point_hi: "मैं आपको बताना चाहता हूँ कि प्रॉपर्टी वैल्यूएशन में अंतर होम लोन रिजेक्शन का एक बड़ा कारण है। कृपया सुनिश्चित करें कि आपकी प्रॉपर्टी की मार्केट वैल्यू लेंडर के मूल्यांकन से मेल खाती है ताकि फंडिंग में कोई कमी न आए।"
-advisor_opportunity_en:   "Use this to guide clients through the pre-approval process and position yourself as a comprehensive advisor who manages the entire home buying journey, not just the loan."
-advisor_opportunity_hi:   "इसका उपयोग क्लाइंट्स को प्री-अप्रूवल प्रक्रिया में मार्गदर्शन देने के लिए करें और खुद को एक ऐसे सलाहकार के रूप में स्थापित करें जो केवल लोन ही नहीं, बल्कि पूरी होम बाइंग जर्नी को मैनेज करता है।"
+advisor_talking_point_en: "Clients planning home purchases should be aware that rising construction costs are widening the gap between loan approvals and actual property costs."
+advisor_talking_point_hi: "घर खरीदने की योजना बना रहे ग्राहकों को पता होना चाहिए कि बढ़ती निर्माण लागत ऋण स्वीकृति और वास्तविक संपत्ति लागत के बीच की खाई को चौड़ा कर रही है।"
+advisor_opportunity_en:   "Use this to review clients' home purchase plans and help them reassess their financing needs."
+advisor_opportunity_hi:   "इसका उपयोग ग्राहकों की घर खरीद योजनाओं की समीक्षा करने और उन्हें उनकी वित्तपोषण आवश्यकताओं का पुनर्मूल्यांकन करने में मदद करने के लिए करें।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
-  - url: "https://www.livemint.com/money/personal-finance/home-loan-property-valuation-circle-rate-real-estate-housing-finance-loan-to-value-ratio-ltv-property-registration-11781669078360.html"
+  - url: "https://www.livemint.com/money/personal-finance/home-loan-shortfall-rising-construction-costs-property-prices-11781671900241.html"
     label: "Source"
 
 # ── SCORING AUDIT (not rendered to users) ────────────────────────────────────
 scoring:
-  gate_action:             "Impact post + Premium"
-  editorial_impact_score:  8
+  gate_action:             "Impact post"
+  editorial_impact_score:  7
   reach_score:             2
-  reach_reasoning:         "High relevance for anyone buying property or taking a home loan."
-  immediacy_score:         2
-  immediacy_reasoning:     "Critical for buyers currently in the negotiation or loan application phase."
+  reach_reasoning:         "Affects all prospective home buyers."
+  immediacy_score:         1
+  immediacy_reasoning:     "Ongoing trend, not a single event."
   materiality_score:       2
-  materiality_reasoning:   "Significant impact on loan eligibility and down payment requirements."
-  surprise_score:          0
-  surprise_reasoning:      "Educational content regarding existing real estate valuation practices."
-  actionability_score:     2
-  actionability_reasoning: "Directly helps buyers avoid funding shortfalls during the loan process."
+  materiality_reasoning:   "Significant financial planning impact for home buyers."
+  surprise_score:          1
+  surprise_reasoning:      "Many buyers may not be aware of this gap."
+  actionability_score:     1
+  actionability_reasoning: "Buyers should reassess their budgets."
   validation_failed:       false
   validation_warnings:     []
 ---

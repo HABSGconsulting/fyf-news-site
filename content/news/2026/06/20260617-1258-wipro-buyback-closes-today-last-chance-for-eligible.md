@@ -1,12 +1,12 @@
 ---
 # ── CORE ────────────────────────────────────────────────────────────────────
 title:           "Wipro buyback closes today: Last chance for eligible shareholders"
-title_hi:        "Wipro बायबैक आज बंद हो रहा है: पात्र शेयरधारकों के लिए आखिरी मौका"
+title_hi:        "Wipro का बायबैक आज बंद: पात्र शेयरधारकों के लिए आखिरी मौका"
 date:            2026-06-17T12:58:15+05:30
 draft:           false
 content_type:    "news"
 category:        "Performance"
-sentiment:       "neutral"
+sentiment:       "positive"
 impact_horizon:  "Short Term"
 primary_persona: "long_term_investor"
 affected_personas:
@@ -14,51 +14,51 @@ affected_personas:
   - "active_trader"
 concepts:
   - "share_buyback"
-  - "record_date"
-  - "equity_capital"
+  - "tender_offer"
+  - "shareholder_returns"
 concept_difficulty: "intermediate"
 premium:         false
-push_notify:     false
+push_notify:     true
 shareable:       true
-whatsapp_caption: "Wipro buyback closes today. Check if you are eligible to tender your shares."
+whatsapp_caption: "Wipro buyback closes today. If you hold Wipro shares, this is your last chance to tender."
 
 # ── RETAIL LENS ─────────────────────────────────────────────────────────────
-who_affected_en:    "Existing Wipro shareholders who held shares on the June 5 record date."
-who_affected_hi:    "मौजूदा Wipro शेयरधारक जिनके पास 5 जून की रिकॉर्ड डेट पर शेयर थे।"
-what_changes_en:    "The company is repurchasing up to 60 crore shares at a price of Rs 250 per share."
-what_changes_hi:    "कंपनी 250 रुपये प्रति शेयर की कीमत पर 60 करोड़ शेयरों तक की पुनर्खरीद कर रही है।"
-action_command_en:  "If eligible, ensure your tender request is submitted through your broker before market close."
-action_command_hi:  "यदि आप पात्र हैं, तो सुनिश्चित करें कि आपका टेंडर अनुरोध बाजार बंद होने से पहले आपके ब्रोकर के माध्यम से जमा हो जाए।"
+who_affected_en:    "Wipro shareholders who are eligible to participate in the ongoing buyback offer."
+who_affected_hi:    "Wipro शेयरधारक जो चल रहे बायबैक ऑफर में भाग लेने के पात्र हैं।"
+what_changes_en:    "Today is the last day to tender Wipro shares in the company's buyback offer."
+what_changes_hi:    "आज कंपनी के बायबैक ऑफर में Wipro शेयर टेंडर करने का आखिरी दिन है।"
+action_command_en:  "If you hold Wipro shares and wish to participate, tender your shares through your broker today before the closing time."
+action_command_hi:  "यदि आपके पास Wipro के शेयर हैं और आप भाग लेना चाहते हैं, तो आज बंद होने के समय से पहले अपने ब्रोकर के माध्यम से अपने शेयर टेंडर करें।"
 
 # ── PRO LENS ─────────────────────────────────────────────────────────────────
 behavioral_risk:          "low"
-advisor_talking_point_en: "Just a reminder that the Wipro buyback closes today. If you held shares on the record date, please check if you wish to tender them."
-advisor_talking_point_hi: "बस एक रिमाइंडर कि Wipro का बायबैक आज बंद हो रहा है। यदि आपके पास रिकॉर्ड डेट पर शेयर थे, तो कृपया जांच लें कि क्या आप उन्हें टेंडर करना चाहते हैं।"
-advisor_opportunity_en:   "Help clients calculate the tax implications of tendering shares versus holding them for long-term growth."
-advisor_opportunity_hi:   "क्लाइंट्स को शेयर टेंडर करने बनाम उन्हें लॉन्ग-टर्म ग्रोथ के लिए होल्ड करने के टैक्स प्रभावों की गणना करने में मदद करें।"
+advisor_talking_point_en: "The Wipro buyback window closes today. Eligible clients should decide promptly if they want to participate."
+advisor_talking_point_hi: "Wipro बायबैक विंडो आज बंद हो रही है। पात्र ग्राहकों को तुरंत निर्णय लेना चाहिए कि वे भाग लेना चाहते हैं या नहीं।"
+advisor_opportunity_en:   "Reach out to clients holding Wipro to ensure they are aware of the buyback deadline and have made an informed decision."
+advisor_opportunity_hi:   "Wipro रखने वाले ग्राहकों से संपर्क करें ताकि यह सुनिश्चित हो सके कि वे बायबैक की समय सीमा से अवगत हैं और एक सूचित निर्णय लिया है।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
-  - url: "https://economictimes.indiatimes.com/markets/stocks/news/wipros-rs-15000-crore-buyback-closes-today-should-retail-investors-participate-analysts-weigh-in/articleshow/131789287.cms"
+  - url: "https://economictimes.indiatimes.com/markets/stocks/news/wipro-buyback-2026-closes-today-last-day-to-tender-shares/articleshow/131788500.cms"
     label: "Source"
 
 # ── SCORING AUDIT (not rendered to users) ────────────────────────────────────
 scoring:
   gate_action:             "Impact post"
-  editorial_impact_score:  5
-  reach_score:             1
-  reach_reasoning:         "Specific to existing Wipro shareholders."
-  immediacy_score:         2
-  immediacy_reasoning:     "Buyback closes today."
+  editorial_impact_score:  7
+  reach_score:             2
+  reach_reasoning:         "Relevant to all Wipro shareholders."
+  immediacy_score:         3
+  immediacy_reasoning:     "Last day of the buyback window — highly time-sensitive."
   materiality_score:       1
-  materiality_reasoning:   "Limited impact on non-participating shareholders."
+  materiality_reasoning:   "Direct financial decision for eligible shareholders."
   surprise_score:          0
-  surprise_reasoning:      "Scheduled corporate action."
+  surprise_reasoning:      "Scheduled buyback closure."
   actionability_score:     1
-  actionability_reasoning: "Eligible shareholders must act today."
+  actionability_reasoning: "Shareholders must act today if they want to participate."
   validation_failed:       false
   validation_warnings:     []
 ---
