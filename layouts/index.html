@@ -57,8 +57,7 @@
       {{- end }}
 
       {{- $sentiment := .Params.sentiment | default "neutral" }}
-      {{- $scoring   := .Params.scoring | default dict }}
-      {{- $score     := $scoring.editorial_impact_score | default 0 }}
+      {{- $score     := .Params.editorial_impact_score | default 0 }}
       {{- $persona   := .Params.primary_persona | default "" }}
       {{- $uiLabel   := cond (ne $persona "") (index $personaLabels $persona | default "") "" }}
       {{- $scoreTier := "tier-low" }}

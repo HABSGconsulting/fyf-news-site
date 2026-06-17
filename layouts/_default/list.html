@@ -12,8 +12,7 @@
       <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" | upper }}</div>
       {{- range .Pages }}
         {{- $sentiment    := .Params.sentiment | default "neutral" }}
-        {{- $scoring      := .Params.scoring | default dict }}
-        {{- $score        := $scoring.editorial_impact_score | default 0 }}
+        {{- $score        := .Params.editorial_impact_score | default 0 }}
         {{- $personaKey   := .Params.primary_persona | default "" }}
         {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
         <a class="fyf-card" href="{{ .Permalink }}">
