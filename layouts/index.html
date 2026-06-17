@@ -5,7 +5,7 @@
 
 {{- $impactPosts := slice }}
 {{- range where site.RegularPages "Section" "news" }}
-  {{- $ga := .Params.gate_action | default "" }}
+  {{- $ga := .Params.gate_action | default (.Params.scoring.gate_action | default "") }}
   {{- $isLang := true }}
   {{- if $isHindi }}
     {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}{{- $isLang = false }}{{- end }}
@@ -37,11 +37,11 @@
 
   <div class="fyf-news-header">
     <h1 class="fyf-news-title">{{ if $isHindi }}न्यूज़ डेस्क{{ else }}News Desk{{ end }}</h1>
-    <p class="fyf-news-subtitle">{{ if $isHindi }}आज की वित्तीय खबरें आपके पैसे के लिए क्या मायने रखती हैं। इंट्राडे अपडेट।{{ else }}Investor-framed analysis of Indian personal finance news. Updated intraday.{{ end }}</p>
+    <p class="fyf-news-subtitle">{{ if $isHindi }}आज की वित्तीय खबरें आपके पैसे के लिए क्या मायने रखती हैं{{ else }}Investor-framed analysis of Indian personal finance news. Updated intraday.{{ end }}</p>
   </div>
 
   {{- if not $sorted }}
-    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है। जल्द वापस आएं।{{ else }}No posts yet. Check back soon.{{ end }}</p>
+    <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है{{ else }}No posts yet. Check back soon.{{ end }}</p>
   {{- else }}
     {{- $currentDay := "" }}
     {{- range $sorted }}
@@ -56,6 +56,8 @@
       {{- $sentiment := .Params.sentiment | default "neutral" }}
       {{- $persona   := .Params.primary_persona | default "" }}
       {{- $uiLabel   := cond (ne $persona "") (index $personaLabels $persona | default "") "" }}
+      {{- $scoring   := .Params.scoring | default dict }}
+      {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
@@ -67,6 +69,9 @@
               <span class="fyf-card-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
               {{ $uiLabel }}
             </span>
+            {{- end }}
+            {{- if gt $score 0 }}
+            <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
             {{- end }}
           </div>
           <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ .Title }}</h2>
@@ -83,13 +88,10 @@
   <section class="fyf-more-reads">
     <div class="fyf-more-reads-header">
       <span class="fyf-more-reads-label">{{ if $isHindi }}और पढ़ें{{ else }}More Reads{{ end }}</span>
-      {{- if $allMoreReads }}
-      <span class="fyf-more-reads-count">{{ len $allMoreReads }}</span>
-      {{- end }}
+      {{- if $allMoreReads }}<span class="fyf-more-reads-count">{{ len $allMoreReads }}</span>{{- end }}
     </div>
-
     {{- if not $allMoreReads }}
-    <p class="fyf-more-reads-empty">{{ if $isHindi }}आज कोई अतिरिक्त लेख नहीं है।{{ else }}No additional reads today.{{ end }}</p>
+    <p class="fyf-more-reads-empty">{{ if $isHindi }}आज कोई अतिरिक्त लेख नहीं है{{ else }}No additional reads today.{{ end }}</p>
     {{- else }}
     {{- $byCategory := dict }}
     {{- range $allMoreReads }}
@@ -97,7 +99,6 @@
       {{- $existing := index $byCategory $cat | default slice }}
       {{- $byCategory = merge $byCategory (dict $cat ($existing | append .)) }}
     {{- end }}
-
     <div class="fyf-more-reads-grid">
       {{- range $cat, $items := $byCategory }}
       <div class="fyf-more-reads-col">
@@ -105,12 +106,8 @@
         <ul class="fyf-more-reads-list">
           {{- range $items }}
           <li>
-            <a href="{{ .url }}" class="fyf-more-link" target="_blank" rel="noopener noreferrer">
-              {{ .title }}
-            </a>
-            {{- if .one_liner }}
-            <span class="fyf-more-liner">{{ .one_liner }}</span>
-            {{- end }}
+            <a href="{{ .url }}" class="fyf-more-link" target="_blank" rel="noopener noreferrer">{{ .title }}</a>
+            {{- if .one_liner }}<span class="fyf-more-liner">{{ .one_liner }}</span>{{- end }}
           </li>
           {{- end }}
         </ul>
@@ -123,191 +120,46 @@
 </div>
 
 <style>
-.fyf-feed {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 4rem;
-}
-.fyf-news-header {
-  margin-bottom: 1.75rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--fyf-amber, #D97706);
-}
-.fyf-news-title {
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: var(--fyf-navy, #164E63);
-  margin: 0 0 0.3rem;
-  letter-spacing: -0.01em;
-}
-.fyf-news-subtitle {
-  font-size: 0.82rem;
-  color: var(--fyf-muted, #6B7280);
-  font-style: italic;
-  margin: 0;
-}
-.fyf-empty { color: var(--fyf-muted, #6B7280); padding: 2rem 0; }
+.fyf-feed { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.fyf-news-header { margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 2px solid #D97706; }
+.fyf-news-title { font-size: 1.45rem; font-weight: 700; color: #164E63; margin: 0 0 0.3rem; letter-spacing: -0.01em; }
+.fyf-news-subtitle { font-size: 0.82rem; color: #6B7280; font-style: italic; margin: 0; }
+.fyf-empty { color: #6B7280; padding: 2rem 0; }
 .fyf-day-block { margin-bottom: 2.25rem; }
-.fyf-day-label {
-  font-size: 0.63rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--fyf-navy, #164E63);
-  border-bottom: 2px solid var(--fyf-amber, #D97706);
-  padding-bottom: 0.3rem;
-  margin-bottom: 0.75rem;
-  display: inline-block;
-}
-.fyf-card {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: inherit;
-  background: var(--entry);
-  border: 1px solid var(--fyf-border, rgba(22,78,99,0.12));
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
-}
-.fyf-card:hover {
-  box-shadow: 0 4px 20px rgba(22, 78, 99, 0.1);
-  transform: translateY(-1px);
-  text-decoration: none;
-}
+.fyf-day-label { font-size: 0.63rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #164E63; border-bottom: 2px solid #D97706; padding-bottom: 0.3rem; margin-bottom: 0.75rem; display: inline-block; }
+.fyf-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--entry); border: 1px solid rgba(22,78,99,0.12); border-radius: 8px; overflow: hidden; margin-bottom: 0.5rem; transition: box-shadow 0.18s, transform 0.18s; }
+.fyf-card:hover { box-shadow: 0 4px 20px rgba(22,78,99,0.1); transform: translateY(-1px); text-decoration: none; }
 .fyf-card-topstripe { height: 3px; width: 100%; flex-shrink: 0; }
 .fyf-card-topstripe.s-positive { background: #059669; }
 .fyf-card-topstripe.s-negative { background: #DC2626; }
 .fyf-card-topstripe.s-neutral  { background: #94A3B8; }
-.fyf-card-topstripe.s-watch    { background: var(--fyf-amber, #D97706); }
+.fyf-card-topstripe.s-watch    { background: #D97706; }
 .fyf-card-inner { padding: 0.85rem 1rem; flex: 1; min-width: 0; }
-.fyf-card-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.35rem;
-  flex-wrap: wrap;
-}
-.fyf-card-time {
-  font-size: 0.61rem;
-  font-weight: 500;
-  color: var(--fyf-muted, #6B7280);
-  font-variant-numeric: tabular-nums;
-}
-.fyf-card-persona-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.61rem;
-  font-weight: 600;
-  padding: 0.1rem 0.45rem;
-  border-radius: 99px;
-  background: rgba(22, 78, 99, 0.07);
-  color: var(--fyf-navy, #164E63);
-  white-space: nowrap;
-}
-.fyf-card-for {
-  font-weight: 400;
-  opacity: 0.55;
-  font-size: 0.57rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.fyf-card-title {
-  font-family: 'Source Serif 4', Georgia, serif;
-  font-size: 1.05rem;
-  font-weight: 400;
-  line-height: 1.45;
-  color: var(--fyf-navy, #164E63);
-  margin: 0 0 0.4rem;
-}
-.fyf-card-title.fyf-hindi {
-  font-family: 'Noto Sans Devanagari', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-}
+.fyf-card-eyebrow { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem; flex-wrap: wrap; }
+.fyf-card-time { font-size: 0.61rem; font-weight: 500; color: #6B7280; font-variant-numeric: tabular-nums; }
+.fyf-card-persona-pill { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.61rem; font-weight: 600; padding: 0.1rem 0.45rem; border-radius: 99px; background: rgba(22,78,99,0.07); color: #164E63; white-space: nowrap; }
+.fyf-card-for { font-weight: 400; opacity: 0.55; font-size: 0.57rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.fyf-card-score { font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: auto; }
+.fyf-card-score.s-positive { color: #059669; background: rgba(5,150,105,0.09); }
+.fyf-card-score.s-negative { color: #DC2626; background: rgba(220,38,38,0.09); }
+.fyf-card-score.s-neutral  { color: #64748B; background: rgba(100,116,139,0.09); }
+.fyf-card-score.s-watch    { color: #D97706; background: rgba(217,119,6,0.09); }
+.fyf-card-title { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; font-weight: 400; line-height: 1.45; color: #164E63; margin: 0 0 0.4rem; }
+.fyf-card-title.fyf-hindi { font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 600; font-size: 1rem; }
 .fyf-card-chips { display: flex; gap: 0.3rem; flex-wrap: wrap; }
-.fyf-chip {
-  font-size: 0.59rem;
-  font-weight: 500;
-  background: rgba(22, 78, 99, 0.06);
-  color: var(--fyf-navy, #164E63);
-  padding: 0.1rem 0.42rem;
-  border-radius: 4px;
-  text-transform: capitalize;
-  letter-spacing: 0.02em;
-}
-.fyf-more-reads {
-  margin-top: 2.5rem;
-  padding-top: 1.25rem;
-  border-top: 2px solid var(--fyf-border, rgba(22,78,99,0.12));
-}
-.fyf-more-reads-header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1rem;
-}
-.fyf-more-reads-label {
-  font-size: 0.63rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--fyf-navy, #164E63);
-}
-.fyf-more-reads-count {
-  font-size: 0.6rem;
-  font-weight: 700;
-  background: rgba(22, 78, 99, 0.09);
-  color: var(--fyf-navy, #164E63);
-  padding: 0.1rem 0.45rem;
-  border-radius: 99px;
-}
-.fyf-more-reads-empty {
-  font-size: 0.82rem;
-  color: var(--fyf-muted, #6B7280);
-  padding: 0.5rem 0 1rem;
-  margin: 0;
-}
-.fyf-more-reads-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
-  gap: 1.25rem;
-}
-.fyf-more-reads-cat {
-  font-size: 0.6rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--fyf-muted, #6B7280);
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--fyf-border, rgba(22,78,99,0.1));
-}
-.fyf-more-reads-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
+.fyf-chip { font-size: 0.59rem; font-weight: 500; background: rgba(22,78,99,0.06); color: #164E63; padding: 0.1rem 0.42rem; border-radius: 4px; text-transform: capitalize; }
+.fyf-more-reads { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 2px solid rgba(22,78,99,0.12); }
+.fyf-more-reads-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+.fyf-more-reads-label { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #164E63; }
+.fyf-more-reads-count { font-size: 0.6rem; font-weight: 700; background: rgba(22,78,99,0.09); color: #164E63; padding: 0.1rem 0.45rem; border-radius: 99px; }
+.fyf-more-reads-empty { font-size: 0.82rem; color: #6B7280; padding: 0.5rem 0 1rem; margin: 0; }
+.fyf-more-reads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px,100%), 1fr)); gap: 1.25rem; }
+.fyf-more-reads-cat { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid rgba(22,78,99,0.1); }
+.fyf-more-reads-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
 .fyf-more-reads-list li { display: flex; flex-direction: column; gap: 0.15rem; }
-.fyf-more-link {
-  font-size: 0.82rem;
-  color: var(--fyf-navy, #164E63);
-  text-decoration: none;
-  font-weight: 500;
-  line-height: 1.4;
-  transition: color 0.12s;
-}
-.fyf-more-link:hover { color: var(--fyf-amber, #D97706); text-decoration: none; }
-.fyf-more-liner {
-  font-size: 0.7rem;
-  color: var(--fyf-muted, #6B7280);
-  line-height: 1.4;
-}
+.fyf-more-link { font-size: 0.82rem; color: #164E63; text-decoration: none; font-weight: 500; line-height: 1.4; }
+.fyf-more-link:hover { color: #D97706; }
+.fyf-more-liner { font-size: 0.7rem; color: #6B7280; line-height: 1.4; }
 @media (max-width: 600px) {
   .fyf-card-title { font-size: 0.95rem; }
   .fyf-more-reads-grid { grid-template-columns: 1fr; }
