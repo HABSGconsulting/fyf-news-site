@@ -1,18 +1,33 @@
 {{- define "main" }}
 {{- $params := .Params }}
 
-{{- /* Score: stored as flat top-level fields in frontmatter */}}
-{{- $score             := $params.editorial_impact_score | default 0 }}
-{{- $reachScore        := $params.reach_score        | default "–" }}
-{{- $immediacyScore    := $params.immediacy_score    | default "–" }}
-{{- $materialityScore  := $params.materiality_score  | default "–" }}
-{{- $surpriseScore     := $params.surprise_score     | default "–" }}
-{{- $actionScore       := $params.actionability_score | default ($params.source_score | default "–") }}
+{{- /* Score: flat top-level frontmatter fields */}}
+{{- $score            := $params.editorial_impact_score | default 0 }}
+{{- $reachScore       := $params.reach_score        | default "–" }}
+{{- $immediacyScore   := $params.immediacy_score    | default "–" }}
+{{- $materialityScore := $params.materiality_score  | default "–" }}
+{{- $surpriseScore    := $params.surprise_score     | default "–" }}
+{{- $actionScore      := $params.actionability_score | default ($params.source_score | default "–") }}
 
 {{- $sentiment := $params.sentiment | default "neutral" }}
-{{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- /* Persona UI label: resolve via language-aware data file */}}
+{{- /* v2 format: content_type = "structured", body_en + body_hi in ONE file.
+     Old format: two separate files (.md and .hi.md), body in .Content.
+     We detect format by presence of content_type. */}}
+{{- $isV2      := eq ($params.content_type | default "") "structured" }}
+{{- $langParam := $params.language | default "en" }}
+
+{{- /* For v2: we are always on the English URL; language is toggled client-side.
+     For old format: Hugo serves .hi.md at /hi/… so site.Language.Lang = "hi".
+     We use site.Language.Lang as the authoritative language signal. */}}
+{{- $isHindi   := or (eq site.Language.Lang "hi") (and $isV2 (eq $langParam "hi")) }}
+{{- /* For v2 single-file posts, both EN and HI are accessible — we show a
+     toggle that switches the displayed body without navigating. */}}
+{{- $bodyEn := $params.body_en | default "" }}
+{{- $bodyHi := $params.body_hi | default "" }}
+{{- $hasV2Bodies := or (ne $bodyEn "") (ne $bodyHi "") }}
+
+{{- /* Persona UI label */}}
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 {{- $primaryLabel := "" }}
@@ -26,55 +41,44 @@
 {{- $icon  := index $sentimentIcon $sentiment | default "→" }}
 {{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabel $sentiment | default ($sentiment | title)) }}
 
-{{- /* Body fields: retail lens content */}}
-{{- $whoEn    := $params.who_affected_en    | default "" }}
-{{- $whatEn   := $params.what_changes_en    | default "" }}
-{{- $actionEn := $params.action_command_en  | default "" }}
-{{- $whoHi    := $params.who_affected_hi    | default "" }}
-{{- $whatHi   := $params.what_changes_hi    | default "" }}
-{{- $actionHi := $params.action_command_hi  | default "" }}
-{{- $hasRetailLens := or (ne $whoEn "") (ne $whatEn "") (ne $actionEn "") }}
+{{- /* ── Language switcher URL logic ──
 
-{{- /* Language switcher — use Hugo's .Translations if available,
-       else build sibling URL manually from the page permalink.
-       EN page lives at /news/YYYY/MM/<slug>/
-       HI page lives at /hi/news/YYYY/MM/<slug>.hi/ (Hugo appends lang suffix to path)
-       We detect which side we're on and construct the other side's link.
+  V2 posts (content_type: structured): BOTH bodies are in this one page.
+  We show a JS toggle button — no navigation needed.
+
+  Old posts: two separate Hugo pages.
+  - EN page URL:   /news/YYYY/MM/slug/
+  - HI page URL:   /hi/news/YYYY/MM/slug.hi/
+    Hugo appends the language code ".hi" to the BaseFileName when
+    building the path for the hi language. So the HI permalink is
+    literally /hi/news/2026/06/20260614-1335-silver-prices-crash.hi/
+
+  To get from EN → HI: prepend /hi to path, append .hi before trailing slash
+  To get from HI → EN: strip /hi prefix AND strip .hi suffix from slug segment
 */}}
-{{- $langSwitchURL  := "" }}
-{{- $langSwitchLabel := "" }}
-{{- if .Translations }}
-  {{- range .Translations }}
-    {{- $langSwitchURL   = .Permalink }}
-    {{- $langSwitchLabel = cond (eq .Language.Lang "hi") "🇮🇳 हिंदी" "🇬🇧 English" }}
-  {{- end }}
-{{- else }}
-  {{- /* Manual fallback: construct sibling URL */}}
-  {{- $permalink := .Permalink }}
-  {{- if $isHindi }}
-    {{- /* HI page: /hi/news/… — strip /hi prefix to get EN URL */}}
-    {{- $langSwitchURL   = $permalink | replaceRE "^(https?://[^/]+)/hi(/.*)$" "$1$2" }}
-    {{- $langSwitchLabel = "🇬🇧 English" }}
-  {{- else }}
-    {{- /* EN page: insert /hi after the host */}}
-    {{- $langSwitchURL   = $permalink | replaceRE "^(https?://[^/]+)(/.*)$" "$1/hi$2" }}
-    {{- $langSwitchLabel = "🇮🇳 हिंदी" }}
-  {{- end }}
+{{- $showV2Toggle  := and $isV2 $hasV2Bodies }}
+{{- $langSwitchURL := "" }}
+{{- if and (not $isV2) (not $isHindi) }}
+  {{- /* EN old post → construct HI URL: /hi + path + slug gets .hi inserted */}}
+  {{- $path := .RelPermalink }}
+  {{- /* path is like /news/2026/06/20260614-slug/ — insert .hi into slug */}}
+  {{- $langSwitchURL = $path | replaceRE "(/[^/]+)/$" ".hi/" | printf "/hi%s" }}
+{{- else if and (not $isV2) $isHindi }}
+  {{- /* HI old post → construct EN URL: strip /hi prefix, strip .hi from slug */}}
+  {{- $path := .RelPermalink }}
+  {{- $stripped := $path | replaceRE "^/hi" "" | replaceRE "\.hi/$" "/" }}
+  {{- $langSwitchURL = $stripped }}
 {{- end }}
 
-<article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}">
+<article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}" id="fyf-post-root">
 
-  {{/* ── Sentiment accent bar ── */}}
   <div class="fyf-accent-bar s-{{ $sentiment }}"></div>
 
   <header class="fyf-post-header">
-
     <div class="fyf-post-topbar">
 
-      {{/* Sentiment badge */}}
       <span class="fyf-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
 
-      {{/* Score badge — hover reveals sub-score tooltip */}}
       <span class="fyf-badge fyf-badge-score" tabindex="0" aria-describedby="score-tooltip-{{ .File.UniqueID }}">
         {{- if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10
         <span class="fyf-score-tooltip" id="score-tooltip-{{ .File.UniqueID }}" role="tooltip">
@@ -87,7 +91,6 @@
         </span>
       </span>
 
-      {{/* Persona pill */}}
       {{- if $primaryLabel }}
       <span class="fyf-persona-pill">
         <span class="fyf-persona-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
@@ -95,18 +98,26 @@
       </span>
       {{- end }}
 
-      {{/* Language switch — always shown, uses Hugo translations or manual fallback */}}
-      {{- if $langSwitchURL }}
+      {{- /* Language toggle: v2 = JS swap, old = link to sibling page */}}
+      {{- if $showV2Toggle }}
+      <div class="fyf-lang-switch">
+        <button class="fyf-lang-btn fyf-lang-active" id="btn-en" onclick="fyfSetLang('en')">🇬🇧 English</button>
+        <button class="fyf-lang-btn" id="btn-hi" onclick="fyfSetLang('hi')">🇮🇳 हिंदी</button>
+      </div>
+      {{- else if $langSwitchURL }}
       <div class="fyf-lang-switch">
         <a href="{{ $langSwitchURL }}" class="fyf-lang-btn">
-          {{ $langSwitchLabel }}
+          {{ if $isHindi }}🇬🇧 English{{ else }}🇮🇳 हिंदी{{ end }}
         </a>
       </div>
       {{- end }}
 
     </div>
 
-    <h1 class="fyf-post-title">{{ .Title }}</h1>
+    <h1 class="fyf-post-title" id="fyf-title-en">{{ .Title }}</h1>
+    {{- if and $isV2 $bodyHi }}
+    <h1 class="fyf-post-title fyf-hindi fyf-hidden" id="fyf-title-hi">{{ $params.title_hi | default .Title }}</h1>
+    {{- end }}
 
     <div class="fyf-post-byline">
       <span>{{ .Date.Format "2 January 2006" }}</span>
@@ -115,42 +126,17 @@
       {{- if $params.category }}<span class="fyf-sep">·</span><span>{{ $params.category }}</span>{{- end }}
       {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
-
   </header>
 
-  {{/* ── Article body ──
-       Retail lens fields (who_affected_en, what_changes_en, action_command_en)
-       are the primary content for news posts.
-       Fallback to .Content for any old-format posts that have a Markdown body.
-  */}}
   <div class="fyf-post-body">
-    {{- if and $hasRetailLens (not $isHindi) }}
-      {{- if $whoEn }}
-      <h2>{{ if $isHindi }}कौन प्रभावित{{ else }}Who Is Affected{{ end }}</h2>
-      <p>{{ $whoEn }}</p>
-      {{- end }}
-      {{- if $whatEn }}
-      <h2>{{ if $isHindi }}क्या बदला{{ else }}What Changes{{ end }}</h2>
-      <p>{{ $whatEn }}</p>
-      {{- end }}
-      {{- if $actionEn }}
-      <h2>{{ if $isHindi }}क्या करें{{ else }}What To Do{{ end }}</h2>
-      <p>{{ $actionEn }}</p>
-      {{- end }}
-    {{- else if and $hasRetailLens $isHindi }}
-      {{- if $whoHi }}
-      <h2>कौन प्रभावित</h2>
-      <p>{{ $whoHi }}</p>
-      {{- end }}
-      {{- if $whatHi }}
-      <h2>क्या बदला</h2>
-      <p>{{ $whatHi }}</p>
-      {{- end }}
-      {{- if $actionHi }}
-      <h2>क्या करें</h2>
-      <p>{{ $actionHi }}</p>
+    {{- if $isV2 }}
+      {{- /* V2: bodies in frontmatter params */}}
+      <div id="fyf-body-en">{{ $bodyEn | markdownify }}</div>
+      {{- if $bodyHi }}
+      <div id="fyf-body-hi" class="fyf-hindi fyf-hidden">{{ $bodyHi | markdownify }}</div>
       {{- end }}
     {{- else }}
+      {{- /* Old format: body in .Content (Markdown file body) */}}
       {{ .Content }}
     {{- end }}
   </div>
@@ -174,29 +160,54 @@
 
 </article>
 
+{{- if $showV2Toggle }}
+<script>
+function fyfSetLang(lang) {
+  var enBody  = document.getElementById('fyf-body-en');
+  var hiBody  = document.getElementById('fyf-body-hi');
+  var enTitle = document.getElementById('fyf-title-en');
+  var hiTitle = document.getElementById('fyf-title-hi');
+  var btnEn   = document.getElementById('btn-en');
+  var btnHi   = document.getElementById('btn-hi');
+  var root    = document.getElementById('fyf-post-root');
+  if (lang === 'hi') {
+    if (enBody)  enBody.classList.add('fyf-hidden');
+    if (hiBody)  hiBody.classList.remove('fyf-hidden');
+    if (enTitle) enTitle.classList.add('fyf-hidden');
+    if (hiTitle) hiTitle.classList.remove('fyf-hidden');
+    if (btnEn)   btnEn.classList.remove('fyf-lang-active');
+    if (btnHi)   btnHi.classList.add('fyf-lang-active');
+    if (root)    root.classList.add('fyf-hindi');
+  } else {
+    if (enBody)  enBody.classList.remove('fyf-hidden');
+    if (hiBody)  hiBody.classList.add('fyf-hidden');
+    if (enTitle) enTitle.classList.remove('fyf-hidden');
+    if (hiTitle) hiTitle.classList.add('fyf-hidden');
+    if (btnEn)   btnEn.classList.add('fyf-lang-active');
+    if (btnHi)   btnHi.classList.remove('fyf-lang-active');
+    if (root)    root.classList.remove('fyf-hindi');
+  }
+}
+</script>
+{{- end }}
+
 <style>
+.fyf-hidden { display: none !important; }
+
 .fyf-post {
   max-width: 680px;
   margin: 0 auto;
   padding: 0 1rem 4rem;
 }
 
-/* ── Sentiment accent bar ── */
-.fyf-accent-bar {
-  height: 4px;
-  width: 100%;
-  margin-bottom: 1.75rem;
-  border-radius: 0;
-}
+.fyf-accent-bar { height: 4px; width: 100%; margin-bottom: 1.75rem; border-radius: 0; }
 .fyf-accent-bar.s-positive { background: #059669; }
 .fyf-accent-bar.s-negative { background: #DC2626; }
 .fyf-accent-bar.s-neutral  { background: #94A3B8; }
 .fyf-accent-bar.s-watch    { background: var(--fyf-amber, #D97706); }
 
-/* Header */
 .fyf-post-header { margin-bottom: 2rem; }
 
-/* Top bar */
 .fyf-post-topbar {
   display: flex;
   align-items: center;
@@ -205,7 +216,6 @@
   flex-wrap: wrap;
 }
 
-/* Badges */
 .fyf-badge {
   font-size: 0.63rem;
   font-weight: 700;
@@ -222,7 +232,6 @@
 .fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.09); }
 .fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.09); }
 
-/* Score badge */
 .fyf-badge-score {
   position: relative;
   color: var(--fyf-muted, #6B7280);
@@ -236,7 +245,6 @@
   transform: translateX(-50%) translateY(0);
 }
 
-/* Score tooltip */
 .fyf-score-tooltip {
   position: absolute;
   top: calc(100% + 8px);
@@ -288,7 +296,6 @@
 }
 .fyf-score-row span:last-child { font-weight: 700; opacity: 0.9; }
 
-/* Persona pill */
 .fyf-persona-pill {
   display: inline-flex;
   align-items: center;
@@ -310,8 +317,7 @@
   font-size: 0.58rem;
 }
 
-/* Language switch */
-.fyf-lang-switch { margin-left: auto; }
+.fyf-lang-switch { margin-left: auto; display: flex; gap: 0.3rem; }
 .fyf-lang-btn {
   font-size: 0.7rem;
   font-weight: 600;
@@ -323,14 +329,19 @@
   background: rgba(22, 78, 99, 0.05);
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
 }
 .fyf-lang-btn:hover {
   background: var(--fyf-navy, #164E63);
   color: #fff;
   text-decoration: none;
 }
+.fyf-lang-active {
+  background: var(--fyf-navy, #164E63) !important;
+  color: #fff !important;
+}
 
-/* English title */
 .fyf-post-title {
   font-family: 'Source Serif 4', Georgia, serif;
   font-size: clamp(1.45rem, 3vw, 2.1rem);
@@ -340,9 +351,8 @@
   color: var(--fyf-navy, #164E63);
   margin: 0 0 0.6rem;
 }
-
-/* Hindi title */
-.fyf-hindi .fyf-post-title {
+.fyf-hindi .fyf-post-title,
+.fyf-post-title.fyf-hindi {
   font-family: 'Yatra One', serif;
   font-weight: 400;
   font-size: clamp(1.35rem, 2.8vw, 2rem);
@@ -350,7 +360,6 @@
   letter-spacing: 0;
 }
 
-/* Byline */
 .fyf-post-byline {
   font-size: 0.72rem;
   color: var(--fyf-muted, #6B7280);
@@ -363,10 +372,8 @@
 }
 .fyf-sep { opacity: 0.35; }
 
-/* Body */
 .fyf-post-body { margin-top: 2rem; }
 
-/* Section headings */
 .fyf-post-body h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.63rem;
@@ -385,7 +392,6 @@
   margin: 0 0 0.75rem;
 }
 
-/* Hindi body */
 .fyf-hindi .fyf-post-body h2 {
   font-family: 'Yatra One', serif;
   font-weight: 400;
@@ -403,7 +409,6 @@
   margin: 0 0 0.75rem;
 }
 
-/* Sources */
 .fyf-sources {
   margin-top: 2rem;
   padding-top: 0.9rem;
@@ -433,7 +438,6 @@
 }
 .fyf-source-pill:hover { background: rgba(22,78,99,0.12); text-decoration: none; }
 
-/* Tags */
 .fyf-tags {
   margin-top: 1.25rem;
   display: flex;
@@ -450,7 +454,6 @@
   letter-spacing: 0.02em;
 }
 
-/* Mobile */
 @media (max-width: 600px) {
   .fyf-post-title              { font-size: 1.3rem; }
   .fyf-post-body p             { font-size: 1.1rem; }
