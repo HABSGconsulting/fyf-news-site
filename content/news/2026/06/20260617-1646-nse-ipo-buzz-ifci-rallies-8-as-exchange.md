@@ -1,65 +1,64 @@
 ---
 # ── CORE ────────────────────────────────────────────────────────────────────
-title:           "NSE IPO buzz: IFCI rallies 8% as exchange prepares filing"
-title_hi:        "NSE IPO की चर्चा: एक्सचेंज की फाइलिंग की तैयारी के बीच IFCI में 8% की तेजी"
-date:            2026-06-17T16:46:37+05:30
+title:           "NSE IPO buzz: IFCI rallies 8% as exchange listing optimism grows"
+title_hi:        "NSE IPO चर्चा: एक्सचेंज लिस्टिंग की उम्मीद बढ़ने से IFCI 8% चढ़ा"
+date:            2026-06-17T16:46:00+05:30
 draft:           false
 content_type:    "news"
-category:        "Macro"
+category:        "Performance"
 sentiment:       "positive"
 impact_horizon:  "Short Term"
-primary_persona: "long_term_investor"
+primary_persona: "active_trader"
 affected_personas:
-  - "long_term_investor"
   - "active_trader"
+  - "long_term_investor"
 concepts:
-  - "IPO"
-  - "DRHP"
-  - "exchange_listing"
-  - "market_sentiment"
+  - "ipo"
+  - "stock_exchange"
+  - "momentum_trading"
 concept_difficulty: "intermediate"
 premium:         false
 push_notify:     false
 shareable:       true
-whatsapp_caption: "Market Buzz: NSE IPO filing expected this week. IFCI rallies 8% on the news."
+whatsapp_caption: "NSE IPO optimism is fuelling an 8% rally in IFCI shares. Here's what's driving it."
 
-# ── RETAIL LENS ─────────────────────────────────────────────────────────────
-who_affected_en:    "Investors tracking financial stocks and those interested in the upcoming NSE IPO."
-who_affected_hi:    "फाइनेंशियल स्टॉक्स पर नजर रखने वाले और आगामी NSE IPO में रुचि रखने वाले निवेशक।"
-what_changes_en:    "IFCI shares surged 8% to a 52-week high amid expectations that the NSE will file its IPO papers this week."
-what_changes_hi:    "NSE द्वारा इस सप्ताह IPO पेपर्स फाइल करने की उम्मीदों के बीच IFCI के शेयरों में 8% की तेजी आई और यह 52-हफ्ते के उच्चतम स्तर पर पहुंच गया।"
-action_command_en:  "Monitor official announcements regarding the NSE DRHP filing before making any speculative trades in related stocks."
-action_command_hi:  "संबंधित शेयरों में कोई भी सट्टा व्यापार करने से पहले NSE के DRHP फाइलिंग से जुड़ी आधिकारिक घोषणाओं पर नजर रखें।"
+# ── RETAIL LENS ──────────────────────────────────────────────────────────────
+who_affected_en:    "Investors holding IFCI shares or tracking the NSE IPO development."
+who_affected_hi:    "IFCI शेयर रखने वाले या NSE IPO विकास को ट्रैक करने वाले निवेशक।"
+what_changes_en:    "IFCI shares rallied ~8% as optimism around the NSE IPO grew, given IFCI's stake in NSE."
+what_changes_hi:    "NSE में IFCI की हिस्सेदारी को देखते हुए NSE IPO को लेकर आशावाद बढ़ने से IFCI के शेयर ~8% चढ़े।"
+action_command_en:  "If you hold IFCI shares, monitor NSE IPO timeline updates as they will directly impact IFCI's valuation."
+action_command_hi:  "यदि आपके पास IFCI शेयर हैं, तो NSE IPO समयरेखा अपडेट की निगरानी करें क्योंकि वे सीधे IFCI के मूल्यांकन को प्रभावित करेंगे।"
 
 # ── PRO LENS ─────────────────────────────────────────────────────────────────
 behavioral_risk:          "medium"
-advisor_talking_point_en: "There is a lot of buzz around the potential NSE IPO. I wanted to clarify that while this is positive for the market, please avoid speculative buying in related stocks based on rumors."
-advisor_talking_point_hi: "संभावित NSE IPO को लेकर काफी चर्चा है। मैं स्पष्ट करना चाहता था कि हालांकि यह बाजार के लिए सकारात्मक है, लेकिन कृपया अफवाहों के आधार पर संबंधित शेयरों में सट्टा खरीदारी से बचें।"
-advisor_opportunity_en:   "Use this news to educate clients on the difference between fundamental investing and speculative trading based on IPO rumors."
-advisor_opportunity_hi:   "इस खबर का उपयोग क्लाइंट्स को फंडामेंटल निवेश और IPO अफवाहों पर आधारित सट्टा ट्रेडिंग के बीच का अंतर समझाने के लिए करें।"
+advisor_talking_point_en: "IFCI's rally is driven by NSE IPO sentiment, not fundamentals. Caution clients against chasing this move."
+advisor_talking_point_hi: "IFCI की तेजी NSE IPO भावना से प्रेरित है, मूल सिद्धांतों से नहीं। ग्राहकों को इस चाल का पीछा करने के प्रति सावधान करें।"
+advisor_opportunity_en:   "Use this to discuss IPO-driven momentum trades vs. fundamental investing with clients."
+advisor_opportunity_hi:   "इसका उपयोग ग्राहकों के साथ IPO-प्रेरित मोमेंटम ट्रेड बनाम मौलिक निवेश पर चर्चा करने के लिए करें।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
-  - url: "https://economictimes.indiatimes.com/markets/stocks/news/nse-ipo-coming-soon-ifci-shares-rally-8-to-fresh-record-high-amid-rising-buzz-around-nse-filing-drhp-this-week/articleshow/131795145.cms"
+  - url: "https://economictimes.indiatimes.com/markets/stocks/news/ifci-shares-rally-nse-ipo/articleshow/131810100.cms"
     label: "Source"
 
 # ── SCORING AUDIT (not rendered to users) ────────────────────────────────────
 scoring:
   gate_action:             "Impact post"
-  editorial_impact_score:  6
+  editorial_impact_score:  5
   reach_score:             1
-  reach_reasoning:         "High interest in NSE IPO."
+  reach_reasoning:         "Relevant mainly to IFCI shareholders."
   immediacy_score:         2
-  immediacy_reasoning:     "Filing expected this week."
+  immediacy_reasoning:     "Same-day price move."
   materiality_score:       1
-  materiality_reasoning:   "NSE listing is a landmark event."
+  materiality_reasoning:   "Sentiment-driven move, limited fundamental impact."
   surprise_score:          1
-  surprise_reasoning:      "Market buzz regarding DRHP filing."
-  actionability_score:     1
-  actionability_reasoning: "Investors tracking related stocks."
+  surprise_reasoning:      "Sharp intraday rally."
+  actionability_score:     0
+  actionability_reasoning: "Monitor NSE IPO updates."
   validation_failed:       false
   validation_warnings:     []
 ---

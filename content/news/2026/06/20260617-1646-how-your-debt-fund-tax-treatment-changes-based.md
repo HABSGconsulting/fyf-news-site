@@ -1,67 +1,64 @@
 ---
 # ── CORE ────────────────────────────────────────────────────────────────────
-title:           "How your debt fund tax treatment changes based on purchase date"
-title_hi:        "खरीद की तारीख के आधार पर कैसे बदलता है आपके debt fund का टैक्स"
-date:            2026-06-17T16:46:37+05:30
+title:           "How your debt fund tax treatment changes based on holding period"
+title_hi:        "होल्डिंग अवधि के आधार पर आपके डेट फंड का कर उपचार कैसे बदलता है"
+date:            2026-06-17T16:46:00+05:30
 draft:           false
 content_type:    "news"
-category:        "Taxation"
+category:        "Mutual Funds"
 sentiment:       "neutral"
 impact_horizon:  "Medium Term"
-primary_persona: "Fixed Income Investor"
+primary_persona: "long_term_investor"
 affected_personas:
-  - "Fixed Income Investor"
-  - "mutual_fund_investor"
+  - "long_term_investor"
+  - "salaried_taxpayer"
 concepts:
   - "debt_funds"
-  - "capital_gains"
-  - "taxation"
-  - "income_tax_slab"
-  - "LTCG"
-  - "STCG"
+  - "capital_gains_tax"
+  - "holding_period"
 concept_difficulty: "intermediate"
-premium:         true
+premium:         false
 push_notify:     false
 shareable:       true
-whatsapp_caption: "Confused about debt fund taxation? Understand how your purchase date impacts your tax liability. Read our latest guide."
+whatsapp_caption: "Did you know your debt fund tax bill depends on how long you hold it? Here's what changes."
 
-# ── RETAIL LENS ─────────────────────────────────────────────────────────────
-who_affected_en:    "Investors holding debt mutual fund units purchased both before and after April 1, 2023."
-who_affected_hi:    "वे निवेशक जिन्होंने 1 अप्रैल 2023 से पहले और बाद में debt mutual fund यूनिट्स खरीदी हैं।"
-what_changes_en:    "Units bought before April 1, 2023, retain indexation benefits, while those bought after are taxed entirely at your applicable income tax slab."
-what_changes_hi:    "1 अप्रैल 2023 से पहले खरीदी गई यूनिट्स पर indexation का लाभ मिलता है, जबकि बाद वाली यूनिट्स पर आपके income tax slab के अनुसार टैक्स लगेगा।"
-action_command_en:  "Review your portfolio statement to identify the purchase dates of your debt fund holdings for accurate tax planning."
-action_command_hi:  "सटीक tax planning के लिए अपने portfolio स्टेटमेंट की जांच करें और अपने debt fund होल्डिंग्स की खरीद की तारीखें देखें।"
+# ── RETAIL LENS ──────────────────────────────────────────────────────────────
+who_affected_en:    "Investors holding or planning to invest in debt mutual funds."
+who_affected_hi:    "डेट म्यूचुअल फंड में निवेश करने वाले या निवेश की योजना बनाने वाले निवेशक।"
+what_changes_en:    "The tax treatment on debt fund gains depends on the holding period, affecting whether gains are taxed as short-term or long-term capital gains."
+what_changes_hi:    "डेट फंड लाभ पर कर उपचार होल्डिंग अवधि पर निर्भर करता है, जो यह प्रभावित करता है कि लाभ पर अल्पकालिक या दीर्घकालिक पूंजीगत लाभ कर लगेगा।"
+action_command_en:  "Review your debt fund holdings and understand the tax implications before redeeming, especially around the 2-year holding period."
+action_command_hi:  "भुनाने से पहले अपनी डेट फंड होल्डिंग की समीक्षा करें और कर निहितार्थ को समझें, विशेष रूप से 2 साल की होल्डिंग अवधि के आसपास।"
 
 # ── PRO LENS ─────────────────────────────────────────────────────────────────
 behavioral_risk:          "medium"
-advisor_talking_point_en: "I wanted to clarify the tax treatment for your debt fund holdings. Depending on when you invested, the tax impact varies, so it's important we review your portfolio to ensure your tax planning remains efficient."
-advisor_talking_point_hi: "मैं आपके debt fund होल्डिंग्स पर लगने वाले टैक्स के बारे में स्पष्ट करना चाहता था। आपने कब निवेश किया, इसके आधार पर टैक्स का असर अलग-अलग होता है, इसलिए यह सुनिश्चित करने के लिए कि आपकी tax planning सही रहे, हमें आपके portfolio की समीक्षा करनी चाहिए।"
-advisor_opportunity_en:   "Use this as a trigger to conduct a portfolio review for your clients, helping them optimize their debt allocation based on the new tax structure."
-advisor_opportunity_hi:   "इसे अपने क्लाइंट्स के portfolio की समीक्षा करने के लिए एक अवसर के रूप में उपयोग करें, ताकि उन्हें नई tax structure के आधार पर अपने debt allocation को बेहतर बनाने में मदद मिल सके।"
+advisor_talking_point_en: "Clients often overlook the tax impact of debt fund redemptions; ensure they understand how holding period changes their tax liability."
+advisor_talking_point_hi: "ग्राहक अक्सर डेट फंड रिडेम्पशन के कर प्रभाव को नजरअंदाज करते हैं; सुनिश्चित करें कि वे समझें कि होल्डिंग अवधि उनकी कर देनदारी को कैसे बदलती है।"
+advisor_opportunity_en:   "Use this to review clients' debt fund portfolios and plan redemptions in a tax-efficient manner."
+advisor_opportunity_hi:   "इसका उपयोग ग्राहकों के डेट फंड पोर्टफोलियो की समीक्षा करने और कर-कुशल तरीके से रिडेम्पशन की योजना बनाने के लिए करें।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
-  - url: "https://www.livemint.com/money/personal-finance/debt-funds-bought-before-or-after-1-april-2023-know-how-the-tax-treatment-changes-11781682797360.html"
+  - url: "https://economictimes.indiatimes.com/mf/analysis/debt-fund-tax-treatment-holding-period/articleshow/131810000.cms"
     label: "Source"
 
 # ── SCORING AUDIT (not rendered to users) ────────────────────────────────────
 scoring:
-  gate_action:             "Impact post + Premium"
-  editorial_impact_score:  8
+  gate_action:             "Impact post"
+  editorial_impact_score:  6
   reach_score:             2
-  reach_reasoning:         "High relevance for all debt fund investors due to tax changes."
-  immediacy_score:         2
-  immediacy_reasoning:     "Tax planning is relevant for current portfolio management."
+  reach_reasoning:         "Relevant to all debt fund investors."
+  immediacy_score:         1
+  immediacy_reasoning:     "Evergreen tax guidance."
   materiality_score:       2
-  materiality_reasoning:   "Significant impact on post-tax returns for debt fund investors."
+  materiality_reasoning:   "Direct impact on post-tax returns."
   surprise_score:          0
-  surprise_reasoning:      "This is a clarification of existing tax rules."
-  actionability_score:     2
-  actionability_reasoning: "Investors need to review their holdings for tax efficiency."
+  surprise_reasoning:      "Known tax rule, not new."
+  actionability_score:     1
+  actionability_reasoning: "Clear action for investors to review."
   validation_failed:       false
   validation_warnings:     []
 ---

@@ -1,65 +1,64 @@
 ---
 # ── CORE ────────────────────────────────────────────────────────────────────
-title:           "Tata Motors shares slide 10% after JLR guidance disappoints"
-title_hi:        "JLR की कमजोर गाइडेंस के बाद Tata Motors के शेयरों में 10% की गिरावट"
-date:            2026-06-17T16:46:37+05:30
+title:           "Tata Motors shares slide 10% after JLR guidance cut"
+title_hi:        "JLR गाइडेंस कटौती के बाद Tata Motors के शेयर 10% फिसले"
+date:            2026-06-17T16:46:00+05:30
 draft:           false
 content_type:    "news"
 category:        "Performance"
 sentiment:       "negative"
-impact_horizon:  "Medium Term"
-primary_persona: "long_term_investor"
+impact_horizon:  "Short Term"
+primary_persona: "active_trader"
 affected_personas:
-  - "long_term_investor"
   - "active_trader"
+  - "long_term_investor"
 concepts:
-  - "equity_volatility"
   - "earnings_guidance"
-  - "EBIT_margin"
-  - "stock_correction"
-concept_difficulty: "intermediate"
+  - "auto_sector"
+  - "jlr"
+concept_difficulty: "beginner"
 premium:         false
 push_notify:     true
 shareable:       true
-whatsapp_caption: "Market Update: Tata Motors shares dropped 10% today following JLR's FY27 guidance. Check your portfolio."
+whatsapp_caption: "Tata Motors dropped 10% after JLR cut its guidance. Here's what happened and what to watch."
 
-# ── RETAIL LENS ─────────────────────────────────────────────────────────────
-who_affected_en:    "Long-term investors and traders holding Tata Motors in their equity portfolio."
-who_affected_hi:    "अपने इक्विटी पोर्टफोलियो में Tata Motors रखने वाले लॉन्ग-टर्म निवेशक और ट्रेडर्स।"
-what_changes_en:    "Tata Motors shares fell 10% following JLR's FY27 financial outlook, which missed analyst profitability expectations."
-what_changes_hi:    "JLR की FY27 की वित्तीय गाइडेंस के बाद Tata Motors के शेयरों में 10% की गिरावट आई, जो विश्लेषकों की उम्मीदों से कम रही।"
-action_command_en:  "Review your investment thesis for Tata Motors to see if the long-term growth story remains intact despite this short-term volatility."
-action_command_hi:  "Tata Motors के लिए अपने निवेश के नजरिए की समीक्षा करें और देखें कि क्या इस अल्पकालिक उतार-चढ़ाव के बावजूद लॉन्ग-टर्म ग्रोथ की कहानी बरकरार है।"
+# ── RETAIL LENS ──────────────────────────────────────────────────────────────
+who_affected_en:    "Investors holding Tata Motors shares in their portfolio."
+who_affected_hi:    "अपने पोर्टफोलियो में Tata Motors शेयर रखने वाले निवेशक।"
+what_changes_en:    "Tata Motors shares fell ~10% after its JLR subsidiary cut its earnings guidance, raising concerns about near-term profitability."
+what_changes_hi:    "Tata Motors के शेयर ~10% गिरे जब इसकी JLR सहायक कंपनी ने अपनी आय गाइडेंस में कटौती की, जिससे निकट अवधि की लाभप्रदता को लेकर चिंताएं बढ़ गईं।"
+action_command_en:  "If you hold Tata Motors, review JLR's guidance details and reassess your position in light of revised earnings expectations."
+action_command_hi:  "यदि आपके पास Tata Motors है, तो JLR की गाइडेंस विवरण की समीक्षा करें और संशोधित आय अपेक्षाओं के मद्देनजर अपनी स्थिति का पुनर्मूल्यांकन करें।"
 
 # ── PRO LENS ─────────────────────────────────────────────────────────────────
 behavioral_risk:          "high"
-advisor_talking_point_en: "I wanted to flag the recent volatility in Tata Motors. While the 10% drop is significant, it is driven by long-term guidance; let's review your position if you are concerned."
-advisor_talking_point_hi: "मैं आपको Tata Motors में हालिया उतार-चढ़ाव के बारे में बताना चाहता था। हालांकि 10% की गिरावट महत्वपूर्ण है, लेकिन यह लॉन्ग-टर्म गाइडेंस के कारण है; यदि आप चिंतित हैं तो आइए आपकी स्थिति की समीक्षा करें।"
-advisor_opportunity_en:   "Reach out to clients holding Tata Motors to provide context and prevent panic selling during this volatility."
-advisor_opportunity_hi:   "Tata Motors रखने वाले क्लाइंट्स से संपर्क करें ताकि उन्हें सही संदर्भ मिल सके और वे इस उतार-चढ़ाव के दौरान घबराकर बिकवाली न करें।"
+advisor_talking_point_en: "The JLR guidance cut is a significant negative for Tata Motors' near-term earnings outlook. Help clients avoid panic selling while reassessing the thesis."
+advisor_talking_point_hi: "JLR गाइडेंस कटौती Tata Motors के निकट अवधि की आय दृष्टिकोण के लिए एक महत्वपूर्ण नकारात्मक है। ग्राहकों को थीसिस का पुनर्मूल्यांकन करते समय घबराहट में बेचने से बचने में मदद करें।"
+advisor_opportunity_en:   "Use this to review auto sector exposure in client portfolios and discuss JLR's long-term EV strategy."
+advisor_opportunity_hi:   "इसका उपयोग क्लाइंट पोर्टफोलियो में ऑटो सेक्टर एक्सपोजर की समीक्षा करने और JLR की दीर्घकालिक EV रणनीति पर चर्चा करने के लिए करें।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
-  - url: "https://economictimes.indiatimes.com/markets/stocks/news/tata-motors-shares-plunge-10-after-weaker-than-expected-jlr-fy27-guidance/articleshow/131795427.cms"
+  - url: "https://economictimes.indiatimes.com/markets/stocks/news/tata-motors-share-price-jlr-guidance-cut/articleshow/131809800.cms"
     label: "Source"
 
 # ── SCORING AUDIT (not rendered to users) ────────────────────────────────────
 scoring:
   gate_action:             "Impact post"
-  editorial_impact_score:  6
-  reach_score:             1
-  reach_reasoning:         "Tata Motors is a widely held stock."
-  immediacy_score:         2
-  immediacy_reasoning:     "Stock price reacted immediately to guidance."
-  materiality_score:       1
-  materiality_reasoning:   "10% drop significantly impacts portfolio value."
+  editorial_impact_score:  8
+  reach_score:             2
+  reach_reasoning:         "Tata Motors is widely held; significant investor base."
+  immediacy_score:         3
+  immediacy_reasoning:     "Sharp same-day price drop."
+  materiality_score:       2
+  materiality_reasoning:   "10% drop is a material price event."
   surprise_score:          1
-  surprise_reasoning:      "Guidance was weaker than market expectations."
-  actionability_score:     1
-  actionability_reasoning: "Investors need to re-evaluate their thesis."
+  surprise_reasoning:      "Guidance cut was unexpected by market."
+  actionability_score:     0
+  actionability_reasoning: "Hold or reassess decision required."
   validation_failed:       false
   validation_warnings:     []
 ---
