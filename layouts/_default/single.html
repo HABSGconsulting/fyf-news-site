@@ -4,6 +4,15 @@
 {{- $sentiment := $params.sentiment | default "neutral" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
+{{- /* Detect content format:
+     - New format (from fyf-news-engine v2, June 17 2026+): body stored in params.body_en / params.body_hi
+     - Old format (pre June 17 2026): body stored in Markdown .Content; paired .hi.md file for Hindi
+     New format files carry a `content_type` param set to "structured".
+*/}}
+{{- $isNewFormat := eq ($params.content_type | default "") "structured" }}
+{{- $bodyEn := $params.body_en | default "" }}
+{{- $bodyHi := $params.body_hi | default "" }}
+
 {{- /* Persona UI label: resolve via language-aware data file */}}
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
@@ -76,8 +85,23 @@
 
   </header>
 
+  {{/* ── Article body ──
+       New format (content_type = "structured"): body_hi / body_en params hold the full Markdown.
+       Old format (pre June 17 2026):            body is in .Content (the Markdown file body).
+       The fallback chain ensures both formats render correctly without any file changes.
+  */}}
   <div class="fyf-post-body">
-    {{ .Content }}
+    {{- if $isNewFormat }}
+      {{- if and $isHindi (ne $bodyHi "") }}
+        {{ $bodyHi | markdownify }}
+      {{- else if and (not $isHindi) (ne $bodyEn "") }}
+        {{ $bodyEn | markdownify }}
+      {{- else }}
+        {{ .Content }}
+      {{- end }}
+    {{- else }}
+      {{ .Content }}
+    {{- end }}
   </div>
 
   {{- if $params.source_links }}
