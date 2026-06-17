@@ -1,22 +1,29 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 {{- $posts := where .Pages "Kind" "page" }}
+{{- $personaLabelsAll := site.Data.persona_labels | default dict }}
+{{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 <div class="fyf-feed">
   {{- if not $posts }}
     <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है।{{ else }}No posts here yet.{{ end }}</p>
   {{- else }}
     {{- range ($posts.GroupByDate "2006-01-02") }}
     <div class="fyf-day-block">
-      <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" }}</div>
+      <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" | upper }}</div>
       {{- range .Pages }}
-        {{- $sentiment := .Params.sentiment | default "neutral" }}
-        {{- $score    := .Params.editorial_impact_score | default 0 }}
+        {{- $sentiment    := .Params.sentiment | default "neutral" }}
+        {{- $scoring      := .Params.scoring | default dict }}
+        {{- $score        := $scoring.editorial_impact_score | default 0 }}
+        {{- $personaKey   := .Params.primary_persona | default "" }}
+        {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
         <a class="fyf-card" href="{{ .Permalink }}">
           <div class="fyf-card-accent s-{{ $sentiment }}"></div>
           <div class="fyf-card-inner">
             <div class="fyf-card-eyebrow">
               <span class="fyf-card-time">{{ .Date.Format "3:04 PM" }} IST</span>
-              <span class="fyf-card-persona">{{ .Params.primary_persona }}</span>
+              {{- if $personaLabel }}
+              <span class="fyf-card-persona"><span class="fyf-for">FOR</span> {{ $personaLabel }}</span>
+              {{- end }}
               <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
             </div>
             <h2 class="fyf-card-title">{{ .Title }}</h2>
@@ -47,7 +54,8 @@
 .fyf-card-inner { padding: 0.85rem 1rem; flex: 1; min-width: 0; }
 .fyf-card-eyebrow { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
 .fyf-card-time { font-size: 0.63rem; font-weight: 500; color: #6B7280; font-variant-numeric: tabular-nums; }
-.fyf-card-persona { font-size: 0.63rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #6B7280; margin-left: auto; }
+.fyf-card-persona { font-size: 0.63rem; font-weight: 600; color: #6B7280; background: rgba(22,78,99,0.07); padding: 0.1rem 0.5rem; border-radius: 99px; margin-left: auto; white-space: nowrap; }
+.fyf-for { font-weight: 400; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.58rem; margin-right: 0.2rem; }
 .fyf-card-score { font-size: 0.63rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 99px; background: var(--code-bg); }
 .fyf-card-score.s-positive { color: #059669; }
 .fyf-card-score.s-negative { color: #DC2626; }

@@ -57,9 +57,10 @@
       {{- end }}
 
       {{- $sentiment := .Params.sentiment | default "neutral" }}
-      {{- $score     := .Params.editorial_impact_score | default 0 }}
+      {{- $scoring   := .Params.scoring | default dict }}
+      {{- $score     := $scoring.editorial_impact_score | default 0 }}
       {{- $persona   := .Params.primary_persona | default "" }}
-      {{- $uiLabel   := index $personaLabels $persona | default "" }}
+      {{- $uiLabel   := cond (ne $persona "") (index $personaLabels $persona | default "") "" }}
       {{- $scoreTier := "tier-low" }}
       {{- if ge $score 9 }}{{- $scoreTier = "tier-blog" }}
       {{- else if ge $score 7 }}{{- $scoreTier = "tier-premium" }}
