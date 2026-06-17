@@ -58,10 +58,8 @@
       {{- $uiLabel   := cond (ne $persona "") (index $personaLabels $persona | default "") "" }}
       {{- $scoring   := .Params.scoring | default dict }}
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
-
-      {{- /* impact_horizon: show chip only if value exists AND is longer than 1 char (filters bare - or –) */}}
-      {{- $horizonRaw   := .Params.impact_horizon | default "" }}
-      {{- $horizonClean := $horizonRaw | replace "_" " " | strings.TrimSpace }}
+      {{- $horizonRaw := .Params.impact_horizon | default "" }}
+      {{- $horizon    := $horizonRaw | replace "_" " " | strings.TrimSpace }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
@@ -80,7 +78,7 @@
           </div>
           <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ .Title }}</h2>
           <div class="fyf-card-chips">
-            {{- if gt (len $horizonClean) 1 }}<span class="fyf-chip">{{ $horizonClean }}</span>{{- end }}
+            {{- if $horizon }}<span class="fyf-chip fyf-chip-horizon">{{ $horizon }}</span>{{- end }}
             {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
           </div>
         </div>
@@ -152,6 +150,7 @@
 .fyf-card-title.fyf-hindi { font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 600; font-size: 1rem; }
 .fyf-card-chips { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .fyf-chip { font-size: 0.59rem; font-weight: 500; background: rgba(22,78,99,0.06); color: #164E63; padding: 0.1rem 0.42rem; border-radius: 4px; text-transform: capitalize; }
+.fyf-chip-horizon { background: rgba(217,119,6,0.08); color: #92400E; }
 .fyf-more-reads { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 2px solid rgba(22,78,99,0.12); }
 .fyf-more-reads-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
 .fyf-more-reads-label { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #164E63; }
