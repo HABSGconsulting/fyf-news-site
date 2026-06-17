@@ -40,7 +40,7 @@ advisor_opportunity_en:   "Use this to reach out to clients who have had a rough
 advisor_opportunity_hi:   "इसका उपयोग उन क्लाइंट्स से संपर्क करने के लिए करें जिनका बाजार में साल खराब रहा है, और उन्हें अपनी टैक्स स्थिति को अनुकूलित करने के लिए ITR फाइल करने में मदद करें।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
