@@ -38,7 +38,7 @@ advisor_opportunity_en:   "Use this to explain technical price adjustments to cl
 advisor_opportunity_hi:   "इसका उपयोग क्लाइंट्स को तकनीकी मूल्य समायोजन समझाने के लिए करें ताकि कॉर्पोरेट कार्रवाइयों के दौरान पैनिक सेलिंग को रोका जा सके।"
 
 # ── DEEP DIVE ────────────────────────────────────────────────────────────────
-learn_links:[]
+learn_links: []
 
 # ── SOURCE LINKS ─────────────────────────────────────────────────────────────
 source_links:
