@@ -1,17 +1,12 @@
 {{- define "main" }}
 {{- $params := .Params }}
-{{- $score := $params.editorial_impact_score | default 0 }}
+
+{{- /* Score: stored nested under scoring{} in frontmatter */}}
+{{- $scoring := $params.scoring | default dict }}
+{{- $score := $scoring.editorial_impact_score | default 0 }}
+
 {{- $sentiment := $params.sentiment | default "neutral" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-
-{{- /* Detect content format:
-     - New format (from fyf-news-engine v2, June 17 2026+): body stored in params.body_en / params.body_hi
-     - Old format (pre June 17 2026): body stored in Markdown .Content; paired .hi.md file for Hindi
-     New format files carry a `content_type` param set to "structured".
-*/}}
-{{- $isNewFormat := eq ($params.content_type | default "") "structured" }}
-{{- $bodyEn := $params.body_en | default "" }}
-{{- $bodyHi := $params.body_hi | default "" }}
 
 {{- /* Persona UI label: resolve via language-aware data file */}}
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
@@ -26,6 +21,15 @@
 {{- $sentimentIcon    := dict "positive" "↗" "negative" "↘" "neutral" "→" "watch" "⚠" }}
 {{- $icon  := index $sentimentIcon $sentiment | default "→" }}
 {{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabel $sentiment | default ($sentiment | title)) }}
+
+{{- /* Body fields: retail lens content */}}
+{{- $whoEn    := $params.who_affected_en    | default "" }}
+{{- $whatEn   := $params.what_changes_en    | default "" }}
+{{- $actionEn := $params.action_command_en  | default "" }}
+{{- $whoHi    := $params.who_affected_hi    | default "" }}
+{{- $whatHi   := $params.what_changes_hi    | default "" }}
+{{- $actionHi := $params.action_command_hi  | default "" }}
+{{- $hasRetailLens := or (ne $whoEn "") (ne $whatEn "") (ne $actionEn "") }}
 
 <article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}">
 
@@ -44,15 +48,15 @@
         {{- if $isHindi }}प्रभाव{{ else }}Impact{{ end }} {{ $score }}/10
         <span class="fyf-score-tooltip" id="score-tooltip-{{ .File.UniqueID }}" role="tooltip">
           <span class="fyf-score-tooltip-title">{{ if $isHindi }}स्कोर विवरण{{ else }}Impact breakdown{{ end }}</span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}पहुँच{{ else }}Reach{{ end }}</span><span>{{ $params.reach_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}तात्कालिकता{{ else }}Immediacy{{ end }}</span><span>{{ $params.immediacy_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}महत्त्व{{ else }}Materiality{{ end }}</span><span>{{ $params.materiality_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}अप्रत्याशित{{ else }}Surprise{{ end }}</span><span>{{ $params.surprise_score | default "–" }}/2</span></span>
-          <span class="fyf-score-row"><span>{{ if $isHindi }}स्रोत{{ else }}Source{{ end }}</span><span>{{ $params.source_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}पहुँच{{ else }}Reach{{ end }}</span><span>{{ $scoring.reach_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}तात्कालिकता{{ else }}Immediacy{{ end }}</span><span>{{ $scoring.immediacy_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}महत्त्व{{ else }}Materiality{{ end }}</span><span>{{ $scoring.materiality_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}अप्रत्याशित{{ else }}Surprise{{ end }}</span><span>{{ $scoring.surprise_score | default "–" }}/2</span></span>
+          <span class="fyf-score-row"><span>{{ if $isHindi }}कार्रवाई{{ else }}Actionability{{ end }}</span><span>{{ $scoring.actionability_score | default "–" }}/2</span></span>
         </span>
       </span>
 
-      {{/* Persona pill — only shown for news posts that have primary_persona */}}
+      {{/* Persona pill */}}
       {{- if $primaryLabel }}
       <span class="fyf-persona-pill">
         <span class="fyf-persona-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
@@ -80,24 +84,42 @@
       <span class="fyf-sep">·</span>
       <span>{{ .Date.Format "3:04 PM" }} IST</span>
       {{- if $params.category }}<span class="fyf-sep">·</span><span>{{ $params.category }}</span>{{- end }}
-      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon | replace "_" " " }}</span>{{- end }}
+      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
 
   </header>
 
   {{/* ── Article body ──
-       New format (content_type = "structured"): body_hi / body_en params hold the full Markdown.
-       Old format (pre June 17 2026):            body is in .Content (the Markdown file body).
-       The fallback chain ensures both formats render correctly without any file changes.
+       Retail lens fields (who_affected_en, what_changes_en, action_command_en)
+       are the primary content for news posts.
+       Fallback to .Content for any old-format posts that have a Markdown body.
   */}}
   <div class="fyf-post-body">
-    {{- if $isNewFormat }}
-      {{- if and $isHindi (ne $bodyHi "") }}
-        {{ $bodyHi | markdownify }}
-      {{- else if and (not $isHindi) (ne $bodyEn "") }}
-        {{ $bodyEn | markdownify }}
-      {{- else }}
-        {{ .Content }}
+    {{- if and $hasRetailLens (not $isHindi) }}
+      {{- if $whoEn }}
+      <h2>{{ if $isHindi }}कौन प्रभावित{{ else }}Who Is Affected{{ end }}</h2>
+      <p>{{ $whoEn }}</p>
+      {{- end }}
+      {{- if $whatEn }}
+      <h2>{{ if $isHindi }}क्या बदला{{ else }}What Changes{{ end }}</h2>
+      <p>{{ $whatEn }}</p>
+      {{- end }}
+      {{- if $actionEn }}
+      <h2>{{ if $isHindi }}क्या करें{{ else }}What To Do{{ end }}</h2>
+      <p>{{ $actionEn }}</p>
+      {{- end }}
+    {{- else if and $hasRetailLens $isHindi }}
+      {{- if $whoHi }}
+      <h2>कौन प्रभावित</h2>
+      <p>{{ $whoHi }}</p>
+      {{- end }}
+      {{- if $whatHi }}
+      <h2>क्या बदला</h2>
+      <p>{{ $whatHi }}</p>
+      {{- end }}
+      {{- if $actionHi }}
+      <h2>क्या करें</h2>
+      <p>{{ $actionHi }}</p>
       {{- end }}
     {{- else }}
       {{ .Content }}
@@ -315,7 +337,7 @@
 /* Body */
 .fyf-post-body { margin-top: 2rem; }
 
-/* English body */
+/* Section headings */
 .fyf-post-body h2 {
   font-family: 'Inter', sans-serif;
   font-size: 0.63rem;
@@ -405,7 +427,6 @@
   .fyf-post-body p             { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body p  { font-size: 1.1rem; }
   .fyf-hindi .fyf-post-body h2 { font-size: 1rem; }
-  /* F2 — mobile tooltip: anchor to left edge of badge, not centre, to prevent viewport overflow */
   .fyf-score-tooltip {
     left: 0;
     transform: translateY(-4px);
