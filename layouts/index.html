@@ -59,6 +59,11 @@
       {{- $scoring   := .Params.scoring | default dict }}
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
 
+      {{- /* Clean impact_horizon: skip if empty, "-", or "–" */}}
+      {{- $horizon := .Params.impact_horizon | default "" }}
+      {{- $horizonClean := $horizon | replace "_" " " | strings.TrimSpace }}
+      {{- $showHorizon := and (ne $horizonClean "") (ne $horizonClean "-") (ne $horizonClean "–") }}
+
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
         <div class="fyf-card-inner">
@@ -76,7 +81,7 @@
           </div>
           <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ .Title }}</h2>
           <div class="fyf-card-chips">
-            {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon | replace "_" " " }}</span>{{- end }}
+            {{- if $showHorizon }}<span class="fyf-chip">{{ $horizonClean }}</span>{{- end }}
             {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
           </div>
         </div>
