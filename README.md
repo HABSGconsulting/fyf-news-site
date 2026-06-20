@@ -35,6 +35,50 @@ Two post formats coexist in this repo. The template handles both transparently.
 
 **Migration policy:** old posts are left as-is. They render correctly via the `.Content` fallback in `layouts/_default/single.html`. No backfill needed.
 
+## Multilingual Setup & Known Gotchas
+
+Hugo's `defaultContentLanguage: en` assigns all `.md` files to the `en` site.
+The `hi` site sees content only if Hugo can find a Hindi translation.
+
+### Why `site.Sites` is required in templates
+
+In a multilingual Hugo build, when a template renders for the `hi` language site,
+`site.RegularPages` returns the `hi` site's own pages — which may be empty if no
+separate Hindi `.md` files exist. To always reach the unified `en` page pool:
+
+```go
+{{- $allPages := where (index site.Sites 0).RegularPages "Section" "news" }}
+```
+
+`site.Sites` returns all language sites in the build. Index `0` is always the
+default language site (`en`). This is the correct pattern for cross-language
+page access in Hugo multilingual builds.
+
+**Common mistake:** `hugo.Sites` — `hugo` is the build-info object (version,
+environment). It has no `.Sites` field. Always use `site.Sites`.
+
+### GroupByDate limitation
+
+`Pages.GroupByDate` only works on Hugo's native `Pages` type. A plain Go `slice`
+(built with `slice` + `append`) does **not** have this method — Hugo silently
+renders nothing. Always use manual day-grouping:
+
+```go
+{{- $sorted := sort $posts "Date" "desc" }}
+{{- $currentDay := "" }}
+{{- range $sorted }}
+  {{- $day := .Date | time.Format "2006-01-02" }}
+  {{- if ne $day $currentDay }}
+    {{- if ne $currentDay "" }}</div>{{- end }}
+    <div class="fyf-day-block">
+      <div class="fyf-day-label">{{ .Date | time.Format "Monday, 2 January 2006" }}</div>
+    {{- $currentDay = $day }}
+  {{- end }}
+  ... card HTML ...
+{{- end }}
+{{- if ne $currentDay "" }}</div>{{- end }}
+```
+
 ## Deployment
 
 Connected to Cloudflare Pages. Every push to `main` triggers an automatic build and deploy.
