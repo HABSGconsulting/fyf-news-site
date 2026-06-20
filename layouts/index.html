@@ -59,7 +59,10 @@
       {{- $scoring   := .Params.scoring | default dict }}
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
       {{- $horizonRaw := .Params.impact_horizon | default "" }}
-      {{- $horizon    := $horizonRaw | replace "_" " " | strings.TrimSpace }}
+      {{- $horizon    := "" }}
+      {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "null") }}
+        {{- $horizon = $horizonRaw | replace "_" " " | strings.TrimSpace }}
+      {{- end }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
