@@ -34,12 +34,8 @@
         {{- /* Support both flat score (old Format A) and nested scoring block (new Format B) */}}
         {{- $score        := .Params.editorial_impact_score | default (.Params.scoring.editorial_impact_score | default 0) }}
         {{- $personaKey   := .Params.primary_persona | default "" }}
-        {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
-        {{- $horizonRaw   := .Params.impact_horizon | default "" }}
-        {{- $horizon      := "" }}
-        {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "_") (ne $horizonRaw "null") }}
-          {{- $horizon = $horizonRaw | replace "_" " " | strings.TrimSpace }}
-        {{- end }}
+        {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
+        {{- $horizon      := .Params.impact_horizon | default "" }}
         {{- /* Use Hindi title when on Hindi site and title_hi is available */}}
         {{- $cardTitle    := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
         <a class="fyf-card" href="{{ .Permalink }}">

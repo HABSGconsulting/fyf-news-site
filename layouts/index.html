@@ -58,11 +58,7 @@
       {{- $uiLabel   := cond (ne $persona "") (index $personaLabels $persona | default "") "" }}
       {{- $scoring   := .Params.scoring | default dict }}
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
-      {{- $horizonRaw := .Params.impact_horizon | default "" }}
-      {{- $horizon    := "" }}
-      {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "_") (ne $horizonRaw "null") }}
-        {{- $horizon = $horizonRaw | replace "_" " " | strings.TrimSpace }}
-      {{- end }}
+      {{- $horizon   := .Params.impact_horizon | default "" }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
