@@ -8,7 +8,10 @@
   {{- $ga := .Params.gate_action | default (.Params.scoring.gate_action | default "") }}
   {{- $isLang := true }}
   {{- if $isHindi }}
-    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}{{- $isLang = false }}{{- end }}
+    {{- /* Old format: .hi.md suffix. New unified format: has title_hi field. */}}
+    {{- $isOldHindi := strings.HasSuffix .File.BaseFileName ".hi" }}
+    {{- $isNewUnified := ne (.Params.title_hi | default "") "" }}
+    {{- if not (or $isOldHindi $isNewUnified) }}{{- $isLang = false }}{{- end }}
   {{- else }}
     {{- if strings.HasSuffix .File.BaseFileName ".hi" }}{{- $isLang = false }}{{- end }}
   {{- end }}
@@ -59,6 +62,7 @@
       {{- $scoring   := .Params.scoring | default dict }}
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
       {{- $horizon   := .Params.impact_horizon | default "" }}
+      {{- $cardTitle := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
         <div class="fyf-card-topstripe s-{{ $sentiment }}"></div>
@@ -75,7 +79,7 @@
             <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
             {{- end }}
           </div>
-          <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ .Title }}</h2>
+          <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ $cardTitle }}</h2>
           <div class="fyf-card-chips">
             {{- if $horizon }}<span class="fyf-chip fyf-chip-horizon">{{ $horizon }}</span>{{- end }}
             {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
