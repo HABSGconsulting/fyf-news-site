@@ -4,9 +4,8 @@
 {{- $personaLabels := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 
 {{- /* Use the EN site's pages directly — unified .md files are assigned to EN by Hugo.
-       (index hugo.Sites 0) always points to the first/default site (en) regardless of
-       which language is currently rendering. This is the correct cross-language pattern. */}}
-{{- $enPages := where (index hugo.Sites 0).RegularPages "Section" "news" }}
+       site.Sites returns all language sites; index ... 0 is always the default (en) site. */}}
+{{- $enPages := where (index site.Sites 0).RegularPages "Section" "news" }}
 
 {{- $impactPosts := slice }}
 {{- range $enPages }}
