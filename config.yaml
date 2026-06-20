@@ -61,6 +61,11 @@ languages:
         Title: "आज की वित्तीय खबरें आपके पैसे के लिए क्या मायने रखती हैं"
         Content: "भारतीय पर्सनल फाइनेंस की निवेशक-केंद्रित विश्लेषण, दिन में छह बार।"
 
+# This tells Hugo to render the hi homepage and list pages
+# even though content files are assigned to en
+build:
+  writeStats: false
+
 outputs:
   home:
     - HTML

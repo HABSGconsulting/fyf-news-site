@@ -1,10 +1,10 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- /* .Pages only returns pages Hugo assigned to THIS language.
-       Unified .md files are assigned to EN by Hugo.
-       Fix: use site.RegularPages filtered by section — sees all pages regardless of language assignment. */}}
-{{- $allPages := where site.RegularPages "Section" .Section }}
+{{- /* Use the EN site's pages directly — unified .md files are assigned to EN by Hugo.
+       (index hugo.Sites 0) always points to the first/default site (en) regardless of
+       which language is currently rendering. This is the correct cross-language pattern. */}}
+{{- $allPages := where (index hugo.Sites 0).RegularPages "Section" .Section }}
 
 {{- $posts := slice }}
 {{- range $allPages }}
@@ -26,7 +26,6 @@
   {{- if not $posts }}
     <p class="fyf-empty">{{ if $isHindi }}अभी कोई पोस्ट नहीं है।{{ else }}No posts here yet.{{ end }}</p>
   {{- else }}
-    {{- /* Sort descending then manually track day — works on plain slice, unlike .GroupByDate */}}
     {{- $sorted := sort $posts "Date" "desc" }}
     {{- $currentDay := "" }}
     {{- range $sorted }}
