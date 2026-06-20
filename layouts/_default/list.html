@@ -36,6 +36,10 @@
         {{- $personaKey   := .Params.primary_persona | default "" }}
         {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
         {{- $horizonRaw   := .Params.impact_horizon | default "" }}
+        {{- $horizon      := "" }}
+        {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "_") (ne $horizonRaw "null") }}
+          {{- $horizon = $horizonRaw | replace "_" " " | strings.TrimSpace }}
+        {{- end }}
         {{- /* Use Hindi title when on Hindi site and title_hi is available */}}
         {{- $cardTitle    := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
         <a class="fyf-card" href="{{ .Permalink }}">
@@ -50,9 +54,7 @@
             </div>
             <h2 class="fyf-card-title">{{ $cardTitle }}</h2>
             <div class="fyf-card-chips">
-              {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "null") }}
-              <span class="fyf-chip">{{ $horizonRaw | replace "_" " " | title }}</span>
-              {{- end }}
+              {{- if $horizon }}<span class="fyf-chip fyf-chip-horizon">{{ $horizon }}</span>{{- end }}
               {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
             </div>
           </div>
@@ -88,6 +90,7 @@
 .fyf-card-title { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; font-weight: 400; line-height: 1.45; color: #164E63; margin: 0 0 0.4rem; }
 .fyf-card-chips { display: flex; gap: 0.3rem; flex-wrap: wrap; }
 .fyf-chip { font-size: 0.6rem; font-weight: 500; background: rgba(22,78,99,0.06); color: #164E63; padding: 0.1rem 0.45rem; border-radius: 4px; text-transform: capitalize; }
+.fyf-chip-horizon { background: rgba(217,119,6,0.08); color: #92400E; }
 @media (max-width: 600px) { .fyf-card-title { font-size: 0.95rem; } .fyf-card-persona { display: none; } }
 </style>
 {{- end }}
