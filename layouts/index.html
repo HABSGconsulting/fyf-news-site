@@ -6,16 +6,17 @@
 {{- $impactPosts := slice }}
 {{- range where site.RegularPages "Section" "news" }}
   {{- $ga := .Params.gate_action | default (.Params.scoring.gate_action | default "") }}
-  {{- $isLang := true }}
+  {{- $include := false }}
   {{- if $isHindi }}
-    {{- /* Old format: .hi.md suffix. New unified format: has title_hi field. */}}
-    {{- $isOldHindi := strings.HasSuffix .File.BaseFileName ".hi" }}
-    {{- $isNewUnified := ne (.Params.title_hi | default "") "" }}
-    {{- if not (or $isOldHindi $isNewUnified) }}{{- $isLang = false }}{{- end }}
+    {{- if or (strings.HasSuffix .File.BaseFileName ".hi") (ne (.Params.title_hi | default "") "") }}
+      {{- $include = true }}
+    {{- end }}
   {{- else }}
-    {{- if strings.HasSuffix .File.BaseFileName ".hi" }}{{- $isLang = false }}{{- end }}
+    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
+      {{- $include = true }}
+    {{- end }}
   {{- end }}
-  {{- if $isLang }}
+  {{- if $include }}
     {{- if and (ne $ga "Skip entirely") (ne $ga "More Reads") }}
       {{- $impactPosts = $impactPosts | append . }}
     {{- end }}

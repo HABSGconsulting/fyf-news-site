@@ -2,17 +2,14 @@
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
 {{- /* .Pages only returns pages Hugo assigned to THIS language.
-       Unified .md files (no .hi suffix, no language param) are assigned to EN by Hugo.
-       So on the Hindi list, .Pages never contains them.
-       Fix: use site.RegularPages filtered by section — same as index.html does. */}}
+       Unified .md files are assigned to EN by Hugo.
+       Fix: use site.RegularPages filtered by section — sees all pages regardless of language assignment. */}}
 {{- $allPages := where site.RegularPages "Section" .Section }}
 
 {{- $posts := slice }}
 {{- range $allPages }}
   {{- if $isHindi }}
-    {{- $isOldHindi   := strings.HasSuffix .File.BaseFileName ".hi" }}
-    {{- $isNewUnified := ne (.Params.title_hi | default "") "" }}
-    {{- if or $isOldHindi $isNewUnified }}
+    {{- if or (strings.HasSuffix .File.BaseFileName ".hi") (ne (.Params.title_hi | default "") "") }}
       {{- $posts = $posts | append . }}
     {{- end }}
   {{- else }}
