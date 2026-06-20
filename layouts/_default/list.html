@@ -1,20 +1,22 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-{{- $allPages := where .Pages "Kind" "page" }}
 
-{{- /* Build filtered list:
-       Hindi  → old format (language=hi)  OR  new unified format (title_hi present)
-       English → old format (no language param, no title_hi twin)  OR  new unified format
-       New unified .md files have title_hi but no language param; they are the EN page
-       and also carry the HI content — so they appear on BOTH lists. */}}
+{{- /* .Pages only returns pages Hugo assigned to THIS language.
+       Unified .md files (no .hi suffix, no language param) are assigned to EN by Hugo.
+       So on the Hindi list, .Pages never contains them.
+       Fix: use site.RegularPages filtered by section — same as index.html does. */}}
+{{- $allPages := where site.RegularPages "Section" .Section }}
+
 {{- $posts := slice }}
 {{- range $allPages }}
   {{- if $isHindi }}
-    {{- if or (eq .Params.language "hi") (ne (.Params.title_hi | default "") "") }}
+    {{- $isOldHindi   := strings.HasSuffix .File.BaseFileName ".hi" }}
+    {{- $isNewUnified := ne (.Params.title_hi | default "") "" }}
+    {{- if or $isOldHindi $isNewUnified }}
       {{- $posts = $posts | append . }}
     {{- end }}
   {{- else }}
-    {{- if ne .Params.language "hi" }}
+    {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
       {{- $posts = $posts | append . }}
     {{- end }}
   {{- end }}
@@ -31,12 +33,10 @@
       <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" | upper }}</div>
       {{- range .Pages }}
         {{- $sentiment    := .Params.sentiment | default "neutral" }}
-        {{- /* Support both flat score (old Format A) and nested scoring block (new Format B) */}}
         {{- $score        := .Params.editorial_impact_score | default (.Params.scoring.editorial_impact_score | default 0) }}
         {{- $personaKey   := .Params.primary_persona | default "" }}
         {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
         {{- $horizon      := .Params.impact_horizon | default "" }}
-        {{- /* Use Hindi title when on Hindi site and title_hi is available */}}
         {{- $cardTitle    := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
         <a class="fyf-card" href="{{ .Permalink }}">
           <div class="fyf-card-accent s-{{ $sentiment }}"></div>
