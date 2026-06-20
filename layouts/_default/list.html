@@ -1,6 +1,12 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
-{{- $posts := where .Pages "Kind" "page" }}
+{{- $allPages := where .Pages "Kind" "page" }}
+{{- $posts := $allPages }}
+{{- if $isHindi }}
+  {{- $posts = where $allPages ".Params.language" "hi" }}
+{{- else }}
+  {{- $posts = where $allPages ".Params.language" "!=" "hi" }}
+{{- end }}
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 <div class="fyf-feed">
@@ -15,6 +21,7 @@
         {{- $score        := .Params.editorial_impact_score | default 0 }}
         {{- $personaKey   := .Params.primary_persona | default "" }}
         {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
+        {{- $horizonRaw   := .Params.impact_horizon | default "" }}
         <a class="fyf-card" href="{{ .Permalink }}">
           <div class="fyf-card-accent s-{{ $sentiment }}"></div>
           <div class="fyf-card-inner">
@@ -27,7 +34,9 @@
             </div>
             <h2 class="fyf-card-title">{{ .Title }}</h2>
             <div class="fyf-card-chips">
-              {{- if .Params.impact_horizon }}<span class="fyf-chip">{{ .Params.impact_horizon }}</span>{{- end }}
+              {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") }}
+              <span class="fyf-chip">{{ $horizonRaw | replace "_" " " | title }}</span>
+              {{- end }}
               {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
             </div>
           </div>
