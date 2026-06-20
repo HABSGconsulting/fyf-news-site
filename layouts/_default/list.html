@@ -1,12 +1,25 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 {{- $allPages := where .Pages "Kind" "page" }}
-{{- $posts := $allPages }}
-{{- if $isHindi }}
-  {{- $posts = where $allPages "Params.language" "hi" }}
-{{- else }}
-  {{- $posts = where $allPages "Params.language" "!=" "hi" }}
+
+{{- /* Build filtered list:
+       Hindi  → old format (language=hi)  OR  new unified format (title_hi present)
+       English → old format (no language param, no title_hi twin)  OR  new unified format
+       New unified .md files have title_hi but no language param; they are the EN page
+       and also carry the HI content — so they appear on BOTH lists. */}}
+{{- $posts := slice }}
+{{- range $allPages }}
+  {{- if $isHindi }}
+    {{- if or (eq .Params.language "hi") (ne (.Params.title_hi | default "") "") }}
+      {{- $posts = $posts | append . }}
+    {{- end }}
+  {{- else }}
+    {{- if ne .Params.language "hi" }}
+      {{- $posts = $posts | append . }}
+    {{- end }}
+  {{- end }}
 {{- end }}
+
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 <div class="fyf-feed">
@@ -18,10 +31,13 @@
       <div class="fyf-day-label">{{ .Key | time.Format "Monday, 2 January 2006" | upper }}</div>
       {{- range .Pages }}
         {{- $sentiment    := .Params.sentiment | default "neutral" }}
-        {{- $score        := .Params.editorial_impact_score | default 0 }}
+        {{- /* Support both flat score (old Format A) and nested scoring block (new Format B) */}}
+        {{- $score        := .Params.editorial_impact_score | default (.Params.scoring.editorial_impact_score | default 0) }}
         {{- $personaKey   := .Params.primary_persona | default "" }}
         {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default $personaKey) "" }}
         {{- $horizonRaw   := .Params.impact_horizon | default "" }}
+        {{- /* Use Hindi title when on Hindi site and title_hi is available */}}
+        {{- $cardTitle    := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
         <a class="fyf-card" href="{{ .Permalink }}">
           <div class="fyf-card-accent s-{{ $sentiment }}"></div>
           <div class="fyf-card-inner">
@@ -32,9 +48,9 @@
               {{- end }}
               <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
             </div>
-            <h2 class="fyf-card-title">{{ .Title }}</h2>
+            <h2 class="fyf-card-title">{{ $cardTitle }}</h2>
             <div class="fyf-card-chips">
-              {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") }}
+              {{- if and (ne $horizonRaw "") (ne $horizonRaw "-") (ne $horizonRaw "null") }}
               <span class="fyf-chip">{{ $horizonRaw | replace "_" " " | title }}</span>
               {{- end }}
               {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
