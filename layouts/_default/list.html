@@ -1,8 +1,6 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- /* Use the EN site's pages directly — unified .md files are assigned to EN by Hugo.
-       site.Sites returns all language sites; index ... 0 is always the default (en) site. */}}
 {{- $allPages := where (index site.Sites 0).RegularPages "Section" .Section }}
 
 {{- $posts := slice }}
@@ -32,32 +30,25 @@
       {{- if ne $day $currentDay }}
         {{- if ne $currentDay "" }}</div>{{- end }}
         <div class="fyf-day-block">
-          <div class="fyf-day-label">{{ .Date | time.Format "Monday, 2 January 2006" | upper }}</div>
+          <div class="fyf-day-label">{{ .Date | time.Format "2 January 2006" }}</div>
         {{- $currentDay = $day }}
       {{- end }}
 
-      {{- $sentiment    := .Params.sentiment | default "neutral" }}
-      {{- $score        := .Params.editorial_impact_score | default (.Params.scoring.editorial_impact_score | default 0) }}
-      {{- $personaKey   := .Params.primary_persona | default "" }}
-      {{- $personaLabel := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
-      {{- $horizon      := .Params.impact_horizon | default "" }}
-      {{- $cardTitle    := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
+      {{- $sentiment  := .Params.sentiment | default "neutral" }}
+      {{- $score      := .Params.editorial_impact_score | default (.Params.scoring.editorial_impact_score | default 0) }}
+      {{- $personaKey := .Params.primary_persona | default "" }}
+      {{- $persona    := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
+      {{- $cardTitle  := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
       <a class="fyf-card" href="{{ .Permalink }}">
-        <div class="fyf-card-accent s-{{ $sentiment }}"></div>
-        <div class="fyf-card-inner">
-          <div class="fyf-card-eyebrow">
-            <span class="fyf-card-time">{{ .Date.Format "3:04 PM" }} IST</span>
-            {{- if $personaLabel }}
-            <span class="fyf-card-persona"><span class="fyf-for">FOR</span> {{ $personaLabel }}</span>
-            {{- end }}
-            <span class="fyf-card-score s-{{ $sentiment }}">{{ $score }}/10</span>
+        <div class="fyf-bar s-{{ $sentiment }}"></div>
+        <div class="fyf-card-body">
+          <div class="fyf-meta">
+            <span class="fyf-time">{{ .Date.Format "3:04 PM" }}</span>
+            {{- if $persona }}<span class="fyf-persona">{{ $persona }}</span>{{- end }}
+            {{- if gt $score 0 }}<span class="fyf-score s-{{ $sentiment }}">{{ $score }}/10</span>{{- end }}
           </div>
-          <h2 class="fyf-card-title{{ if $isHindi }} fyf-hindi{{ end }}">{{ $cardTitle }}</h2>
-          <div class="fyf-card-chips">
-            {{- if $horizon }}<span class="fyf-chip fyf-chip-horizon">{{ $horizon }}</span>{{- end }}
-            {{- if .Params.category }}<span class="fyf-chip">{{ .Params.category }}</span>{{- end }}
-          </div>
+          <p class="fyf-title{{ if $isHindi }} fyf-hi{{ end }}">{{ $cardTitle }}</p>
         </div>
       </a>
     {{- end }}
@@ -66,32 +57,120 @@
 </div>
 
 <style>
-.fyf-feed { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-.fyf-empty { color: #6B7280; padding: 2rem 0; }
-.fyf-day-block { margin-bottom: 2.25rem; }
-.fyf-day-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #164E63; border-bottom: 2px solid #D97706; padding-bottom: 0.3rem; margin-bottom: 0.75rem; display: inline-block; }
-.fyf-card { display: flex; text-decoration: none; color: inherit; background: var(--entry); border: 1px solid rgba(22,78,99,0.12); border-radius: 8px; overflow: hidden; margin-bottom: 0.5rem; transition: box-shadow 0.18s ease, transform 0.18s ease; }
-.fyf-card:hover { box-shadow: 0 4px 20px rgba(22,78,99,0.1); transform: translateY(-1px); text-decoration: none; }
-.fyf-card-accent { width: 3px; flex-shrink: 0; }
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;1,300&family=Noto+Sans+Devanagari:wght@400&display=swap');
+
+.fyf-feed {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+.fyf-empty {
+  color: #9CA3AF;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+/* Day header */
+.fyf-day-block { margin-bottom: 2rem; }
+.fyf-day-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Card */
+.fyf-card {
+  display: flex;
+  align-items: stretch;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 0.15rem;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+.fyf-card:hover { background: rgba(22,78,99,0.04); text-decoration: none; }
+
+/* Sentiment bar */
+.fyf-bar {
+  width: 3px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  margin: 0.3rem 0;
+}
 .s-positive { background: #059669; }
 .s-negative { background: #DC2626; }
-.s-neutral  { background: #94A3B8; }
+.s-neutral  { background: #CBD5E1; }
 .s-watch    { background: #D97706; }
-.fyf-card-inner { padding: 0.85rem 1rem; flex: 1; min-width: 0; }
-.fyf-card-eyebrow { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
-.fyf-card-time { font-size: 0.63rem; font-weight: 500; color: #6B7280; font-variant-numeric: tabular-nums; }
-.fyf-card-persona { font-size: 0.63rem; font-weight: 600; color: #6B7280; background: rgba(22,78,99,0.07); padding: 0.1rem 0.5rem; border-radius: 99px; margin-left: auto; white-space: nowrap; }
-.fyf-for { font-weight: 400; opacity: 0.55; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.58rem; margin-right: 0.2rem; }
-.fyf-card-score { font-size: 0.63rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 99px; background: var(--code-bg); }
-.fyf-card-score.s-positive { color: #059669; }
-.fyf-card-score.s-negative { color: #DC2626; }
-.fyf-card-score.s-neutral  { color: #64748B; }
-.fyf-card-score.s-watch    { color: #D97706; }
-.fyf-card-title { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; font-weight: 400; line-height: 1.45; color: #164E63; margin: 0 0 0.4rem; }
-.fyf-card-title.fyf-hindi { font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 600; font-size: 1rem; }
-.fyf-card-chips { display: flex; gap: 0.3rem; flex-wrap: wrap; }
-.fyf-chip { font-size: 0.6rem; font-weight: 500; background: rgba(22,78,99,0.06); color: #164E63; padding: 0.1rem 0.45rem; border-radius: 4px; text-transform: capitalize; }
-.fyf-chip-horizon { background: rgba(217,119,6,0.08); color: #92400E; }
-@media (max-width: 600px) { .fyf-card-title { font-size: 0.95rem; } .fyf-card-persona { display: none; } }
+
+/* Card body */
+.fyf-card-body {
+  padding: 0.55rem 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+.fyf-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.fyf-time {
+  font-size: 0.6rem;
+  color: #9CA3AF;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.fyf-persona {
+  font-size: 0.6rem;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fyf-score {
+  font-size: 0.6rem;
+  font-weight: 600;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.fyf-score.s-positive { color: #059669; }
+.fyf-score.s-negative { color: #DC2626; }
+.fyf-score.s-neutral  { color: #94A3B8; }
+.fyf-score.s-watch    { color: #D97706; }
+
+/* Title */
+.fyf-title {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #1C3A4A;
+  margin: 0;
+}
+.fyf-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fyf-day-label { color: #6B7280; border-bottom-color: rgba(255,255,255,0.07); }
+  .fyf-card:hover { background: rgba(255,255,255,0.04); }
+  .fyf-time { color: #6B7280; }
+  .fyf-persona { color: #9CA3AF; }
+  .fyf-title { color: #E2E8F0; }
+  .s-neutral { background: #475569; }
+}
+
+@media (max-width: 600px) {
+  .fyf-title { font-size: 0.95rem; }
+  .fyf-hi { font-size: 0.9rem; }
+}
 </style>
 {{- end }}
