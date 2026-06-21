@@ -1,8 +1,7 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- /* site.Sites returns all language sites. Index 0 is always the default (en) site.
-       This ensures we always read from the EN page pool regardless of which language renders. */}}
+{{- /* site.Sites[0] = EN site — always has the full page pool */}}
 {{- $allPages := where (index site.Sites 0).RegularPages "Section" .Section }}
 
 {{- $posts := slice }}
@@ -42,9 +41,9 @@
       {{- $persona    := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
       {{- $cardTitle  := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
-      {{- /* Append #hi hash when linking from the Hindi list */}}
+      {{- /* Hindi list: build /hi/<relpath> from the EN page's RelPermalink */}}
       {{- $cardHref := .Permalink }}
-      {{- if $isHindi }}{{- $cardHref = printf "%s#hi" .Permalink }}{{- end }}
+      {{- if $isHindi }}{{- $cardHref = printf "/hi%s" .RelPermalink }}{{- end }}
 
       <a class="fyf-card" href="{{ $cardHref }}">
         <div class="fyf-bar s-{{ $sentiment }}"></div>
