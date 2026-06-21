@@ -112,7 +112,7 @@
       {{- if $params.impact_horizon }}<span class="fp-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
 
-    {{- /* ── Body: structured (Format B) or markdown ── */}}
+    {{- /* ── Body ── */}}
     <div class="fp-body">
       {{- if $isFormatB }}
 
@@ -131,7 +131,7 @@
           {{- end }}
           {{- if $doEn }}
           <div class="fp-section fp-action-block">
-            <div class="fp-section-label">{{ "→" }} What you can do</div>
+            <div class="fp-section-label">→ What you can do</div>
             <p class="fp-section-text">{{ $doEn }}</p>
           </div>
           {{- end }}
@@ -160,7 +160,6 @@
         </div>
         {{- end }}
 
-        {{- /* Markdown body if present */}}
         {{- if .Content }}
         <div class="fp-markdown">{{ .Content }}</div>
         {{- end }}
@@ -170,7 +169,7 @@
       {{- end }}
     </div>
 
-    {{- /* ── Advisor section (collapsed) ── */}}
+    {{- /* ── Advisor ── */}}
     {{- if $hasAdvisor }}
     <details class="fp-advisor" id="fp-advisor-block">
       <summary class="fp-advisor-summary">
@@ -228,7 +227,7 @@
     </div>
     {{- end }}
 
-    {{- /* ── Footer: sources + share ── */}}
+    {{- /* ── Footer ── */}}
     <div class="fp-footer">
       {{- if $params.source_links }}
       <div class="fp-sources">
@@ -249,7 +248,7 @@
       {{- end }}
     </div>
 
-  </div>{{- /* fp-inner */}}
+  </div>
 </article>
 
 {{- if and $isFormatB $hasHindi }}
@@ -279,6 +278,12 @@ function fpLang(lang) {
   if(btnHi) btnHi.classList.toggle('fp-lang-on', isHi);
   if(forEl) forEl.textContent = isHi ? 'के लिए' : 'For';
 }
+// Auto-switch to Hindi if ?lang=hi is in the URL
+(function(){
+  if (new URLSearchParams(window.location.search).get('lang') === 'hi') {
+    fpLang('hi');
+  }
+})();
 </script>
 {{- end }}
 
@@ -287,18 +292,15 @@ function fpLang(lang) {
 
 .fp-hidden { display: none !important; }
 
-/* ── Container ── */
 .fp { max-width: 680px; margin: 0 auto; padding-bottom: 5rem; }
 .fp-inner { padding: 0 1rem; }
 
-/* ── Sentiment stripe ── */
 .fp-stripe { height: 3px; margin-bottom: 2rem; }
 .fp-stripe.s-positive { background: #059669; }
 .fp-stripe.s-negative { background: #DC2626; }
 .fp-stripe.s-neutral  { background: #94A3B8; }
 .fp-stripe.s-watch    { background: #D97706; }
 
-/* ── Topbar ── */
 .fp-topbar { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
 
 .fp-badge {
@@ -380,7 +382,6 @@ function fpLang(lang) {
 }
 .fp-for { font-weight: 400; opacity: 0.5; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; }
 
-/* ── Language toggle ── */
 .fp-lang { margin-left: auto; display: flex; gap: 0; border: 1px solid rgba(28,58,74,0.15); border-radius: 6px; overflow: hidden; }
 .fp-lang-btn {
   font-size: 0.65rem;
@@ -399,7 +400,6 @@ function fpLang(lang) {
 .fp-lang-btn:hover { background: rgba(28,58,74,0.07); text-decoration: none; }
 .fp-lang-on { background: #1C3A4A !important; color: #fff !important; }
 
-/* ── Title ── */
 .fp-title {
   font-family: 'Source Serif 4', Georgia, serif;
   font-size: clamp(1.5rem, 3.5vw, 2.25rem);
@@ -418,7 +418,6 @@ function fpLang(lang) {
   letter-spacing: 0;
 }
 
-/* ── Byline ── */
 .fp-byline {
   font-size: 0.72rem;
   color: #9CA3AF;
@@ -431,7 +430,6 @@ function fpLang(lang) {
 }
 .fp-dot { opacity: 0.4; }
 
-/* ── Body sections ── */
 .fp-body { display: flex; flex-direction: column; gap: 0; }
 
 .fp-section {
@@ -461,7 +459,6 @@ function fpLang(lang) {
   line-height: 1.9;
 }
 
-/* Action block — highlighted */
 .fp-action-block {
   background: rgba(28,58,74,0.03);
   border-radius: 6px;
@@ -473,13 +470,11 @@ function fpLang(lang) {
 .fp-action-block .fp-section-label { color: #1C3A4A; }
 .fp-action-block .fp-section-text { color: #1C3A4A; font-weight: 400; }
 
-/* Markdown body */
 .fp-markdown { margin-top: 1.5rem; }
 .fp-markdown h2 { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin: 2rem 0 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.4rem; }
 .fp-markdown p { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; line-height: 1.8; color: #374151; margin: 0 0 1rem; }
 .fp-markdown a { color: #1C3A4A; }
 
-/* ── Advisor block ── */
 .fp-advisor {
   margin-top: 2rem;
   border: 1px solid rgba(217,119,6,0.2);
@@ -527,7 +522,6 @@ function fpLang(lang) {
   line-height: 1.9;
 }
 
-/* ── Learn More ── */
 .fp-learn { margin-top: 2rem; }
 .fp-learn-label {
   font-size: 0.6rem;
@@ -569,7 +563,6 @@ function fpLang(lang) {
 .fp-learn-arrow { width: 14px; height: 14px; flex-shrink: 0; color: #9CA3AF; }
 .fp-learn-card:hover .fp-learn-arrow { color: #1C3A4A; }
 
-/* ── Footer ── */
 .fp-footer {
   margin-top: 2rem;
   padding-top: 1.25rem;
@@ -611,7 +604,6 @@ function fpLang(lang) {
 }
 .fp-wa-btn:hover { background: #1ebe5c; text-decoration: none; }
 
-/* ── Dark mode (PaperMod data-theme) ── */
 [data-theme="dark"] .fp-stripe.s-neutral { background: #64748B; }
 [data-theme="dark"] .fp-title { color: #E2E8F0; }
 [data-theme="dark"] .fp-section { border-color: rgba(255,255,255,0.07); }

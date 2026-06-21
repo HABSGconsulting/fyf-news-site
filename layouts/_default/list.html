@@ -40,7 +40,10 @@
       {{- $persona    := cond (ne $personaKey "") (index $personaLabels $personaKey | default "") "" }}
       {{- $cardTitle  := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
-      <a class="fyf-card" href="{{ .Permalink }}">
+      {{- $cardHref := .Permalink }}
+      {{- if $isHindi }}{{- $cardHref = printf "%s?lang=hi" .Permalink }}{{- end }}
+
+      <a class="fyf-card" href="{{ $cardHref }}">
         <div class="fyf-bar s-{{ $sentiment }}"></div>
         <div class="fyf-card-body">
           <div class="fyf-meta">
