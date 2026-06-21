@@ -54,12 +54,10 @@
 
 <article class="fp{{ if $isHindi }} fp-hi{{ end }}" id="fp-root">
 
-  {{- /* ── Top sentiment stripe ── */}}
   <div class="fp-stripe s-{{ $sentiment }}"></div>
 
   <div class="fp-inner">
 
-    {{- /* ── Topbar: badges + lang toggle ── */}}
     <div class="fp-topbar">
       <span class="fp-badge fp-badge-sentiment s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
 
@@ -98,7 +96,6 @@
       {{- end }}
     </div>
 
-    {{- /* ── Title ── */}}
     <h1 class="fp-title" id="fp-title-en">{{ .Title }}</h1>
     {{- if and $isFormatB $params.title_hi }}
     <h1 class="fp-title fp-devanagari fp-hidden" id="fp-title-hi">{{ $params.title_hi }}</h1>
@@ -112,7 +109,6 @@
       {{- if $params.impact_horizon }}<span class="fp-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
 
-    {{- /* ── Body ── */}}
     <div class="fp-body">
       {{- if $isFormatB }}
 
@@ -169,7 +165,6 @@
       {{- end }}
     </div>
 
-    {{- /* ── Advisor ── */}}
     {{- if $hasAdvisor }}
     <details class="fp-advisor" id="fp-advisor-block">
       <summary class="fp-advisor-summary">
@@ -210,7 +205,6 @@
     </details>
     {{- end }}
 
-    {{- /* ── Learn More ── */}}
     {{- if $learnLinks }}
     <div class="fp-learn">
       <div class="fp-learn-label" id="fp-learn-label-en">Learn more</div>
@@ -227,7 +221,6 @@
     </div>
     {{- end }}
 
-    {{- /* ── Footer ── */}}
     <div class="fp-footer">
       {{- if $params.source_links }}
       <div class="fp-sources">
@@ -278,9 +271,9 @@ function fpLang(lang) {
   if(btnHi) btnHi.classList.toggle('fp-lang-on', isHi);
   if(forEl) forEl.textContent = isHi ? 'के लिए' : 'For';
 }
-// Auto-switch to Hindi if ?lang=hi is in the URL
+// Auto-switch to Hindi if page was opened with #hi hash
 (function(){
-  if (new URLSearchParams(window.location.search).get('lang') === 'hi') {
+  if (window.location.hash === '#hi') {
     fpLang('hi');
   }
 })();
