@@ -116,41 +116,19 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;1,300&family=Noto+Sans+Devanagari:wght@400&display=swap');
 
+/* ── Light (default) ── */
 .fyf-feed { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-
-/* Header */
 .fyf-header { margin-bottom: 1.75rem; }
 .fyf-site-title { font-size: 1.3rem; font-weight: 700; color: #1C3A4A; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
 .fyf-site-sub { font-size: 0.82rem; color: #4B5563; margin: 0; font-style: italic; }
-
 .fyf-empty { color: #9CA3AF; padding: 2rem 0; font-size: 0.9rem; }
 
-/* Day header */
 .fyf-day-block { margin-bottom: 2rem; }
-.fyf-day-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9CA3AF;
-  margin-bottom: 0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
+.fyf-day-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9CA3AF; margin-bottom: 0.6rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(0,0,0,0.08); }
 
-/* Card */
-.fyf-card {
-  display: flex;
-  align-items: stretch;
-  text-decoration: none;
-  color: inherit;
-  margin-bottom: 0.15rem;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-}
+.fyf-card { display: flex; align-items: stretch; text-decoration: none; color: inherit; margin-bottom: 0.15rem; border-radius: 4px; transition: background 0.15s ease; }
 .fyf-card:hover { background: rgba(22,78,99,0.04); text-decoration: none; }
 
-/* Sentiment bar — left edge only, no background fill */
 .fyf-bar { width: 3px; flex-shrink: 0; border-radius: 2px; margin: 0.35rem 0; }
 .fyf-bar.s-positive { background: #059669; }
 .fyf-bar.s-negative { background: #DC2626; }
@@ -162,61 +140,41 @@
 .fyf-time { font-size: 0.6rem; color: #9CA3AF; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 .fyf-persona { font-size: 0.6rem; color: #6B7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Score — text only, no background */
-.fyf-score {
-  font-size: 0.65rem;
-  font-weight: 700;
-  margin-left: auto;
-  flex-shrink: 0;
-  background: none !important;
-  padding: 0;
-}
+.fyf-score { font-size: 0.65rem; font-weight: 700; margin-left: auto; flex-shrink: 0; background: none; padding: 0; }
 .fyf-score.s-positive { color: #059669; }
 .fyf-score.s-negative { color: #DC2626; }
 .fyf-score.s-neutral  { color: #6B7280; }
 .fyf-score.s-watch    { color: #D97706; }
 
-.fyf-title {
-  font-family: 'Source Serif 4', Georgia, serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #1C3A4A;
-  margin: 0;
-}
-.fyf-hi {
-  font-family: 'Noto Sans Devanagari', sans-serif;
-  font-weight: 400;
-  font-size: 0.95rem;
-  line-height: 1.7;
-}
+.fyf-title { font-family: 'Source Serif 4', Georgia, serif; font-size: 1rem; font-weight: 400; line-height: 1.5; color: #1C3A4A; margin: 0; }
+.fyf-hi { font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 400; font-size: 0.95rem; line-height: 1.7; }
 
-/* More Reads */
-.fyf-more { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.07); }
+.fyf-more { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0,0,0,0.08); }
 .fyf-more-hd { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
 .fyf-more-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6B7280; }
 .fyf-more-count { font-size: 0.6rem; font-weight: 600; color: #9CA3AF; }
 .fyf-more-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px,100%), 1fr)); gap: 1.25rem; }
-.fyf-more-cat { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9CA3AF; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.fyf-more-cat { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9CA3AF; margin-bottom: 0.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(0,0,0,0.06); }
 .fyf-more-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.65rem; }
 .fyf-more-list li { display: flex; flex-direction: column; gap: 0.15rem; }
 .fyf-more-link { font-size: 0.82rem; color: #1C3A4A; text-decoration: none; font-weight: 500; line-height: 1.4; }
 .fyf-more-link:hover { color: #D97706; }
 .fyf-more-liner { font-size: 0.7rem; color: #9CA3AF; line-height: 1.4; }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .fyf-site-title { color: #E2E8F0; }
-  .fyf-site-sub { color: #9CA3AF; }
-  .fyf-day-label { color: #4B5563; border-bottom-color: rgba(255,255,255,0.06); }
-  .fyf-card:hover { background: rgba(255,255,255,0.04); }
-  .fyf-title { color: #E2E8F0; }
-  .fyf-bar.s-neutral { background: #64748B; }
-  .fyf-score.s-neutral { color: #94A3B8; }
-  .fyf-more { border-top-color: rgba(255,255,255,0.07); }
-  .fyf-more-cat { border-bottom-color: rgba(255,255,255,0.05); }
-  .fyf-more-link { color: #CBD5E1; }
-}
+/* ── Dark mode: tied to PaperMod's data-theme attribute, not prefers-color-scheme ── */
+[data-theme="dark"] .fyf-site-title { color: #E2E8F0; }
+[data-theme="dark"] .fyf-site-sub   { color: #9CA3AF; }
+[data-theme="dark"] .fyf-day-label  { color: #4B5563; border-bottom-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .fyf-card:hover { background: rgba(255,255,255,0.04); }
+[data-theme="dark"] .fyf-title      { color: #E2E8F0; }
+[data-theme="dark"] .fyf-bar.s-neutral { background: #64748B; }
+[data-theme="dark"] .fyf-score.s-neutral { color: #94A3B8; }
+[data-theme="dark"] .fyf-persona    { color: #9CA3AF; }
+[data-theme="dark"] .fyf-more       { border-top-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .fyf-more-label { color: #9CA3AF; }
+[data-theme="dark"] .fyf-more-cat   { border-bottom-color: rgba(255,255,255,0.06); }
+[data-theme="dark"] .fyf-more-link  { color: #CBD5E1; }
+[data-theme="dark"] .fyf-more-link:hover { color: #FCD34D; }
 
 @media (max-width: 600px) {
   .fyf-title { font-size: 0.95rem; }
