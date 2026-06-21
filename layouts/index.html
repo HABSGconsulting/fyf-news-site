@@ -3,7 +3,7 @@
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 
-{{- $enPages := where (index site.Sites 0).RegularPages "Section" "news" }}
+{{- $enPages := where site.RegularPages "Section" "news" }}
 
 {{- $impactPosts := slice }}
 {{- range $enPages }}
