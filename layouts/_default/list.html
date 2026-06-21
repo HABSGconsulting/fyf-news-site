@@ -1,7 +1,7 @@
 {{- define "main" }}
 {{- $isHindi := eq site.Language.Lang "hi" }}
 
-{{- $allPages := where (index site.Sites 0).RegularPages "Section" .Section }}
+{{- $allPages := where site.RegularPages "Section" .Section }}
 
 {{- $posts := slice }}
 {{- range $allPages }}
