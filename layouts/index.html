@@ -11,10 +11,12 @@
   {{- $ga := .Params.gate_action | default (.Params.scoring.gate_action | default "") }}
   {{- $include := false }}
   {{- if $isHindi }}
+    {{- /* Include: old-style .hi.md files OR new unified files that have title_hi */}}
     {{- if or (strings.HasSuffix .File.BaseFileName ".hi") (ne (.Params.title_hi | default "") "") }}
       {{- $include = true }}
     {{- end }}
   {{- else }}
+    {{- /* EN feed: exclude old .hi.md files only */}}
     {{- if not (strings.HasSuffix .File.BaseFileName ".hi") }}
       {{- $include = true }}
     {{- end }}
@@ -67,7 +69,15 @@
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
       {{- $cardTitle := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
-      <a class="fyf-card" href="{{ .Permalink }}">
+      {{- /* For Hindi feed: old .hi.md files link to their own permalink;
+             new unified files link to the EN permalink with #hi hash so
+             single.html auto-switches to Hindi via fpLang('hi') */}}
+      {{- $cardHref := .Permalink }}
+      {{- if and $isHindi (not (strings.HasSuffix .File.BaseFileName ".hi")) }}
+        {{- $cardHref = printf "%s#hi" .Permalink }}
+      {{- end }}
+
+      <a class="fyf-card" href="{{ $cardHref }}">
         <div class="fyf-bar s-{{ $sentiment }}"></div>
         <div class="fyf-card-body">
           <div class="fyf-meta">
