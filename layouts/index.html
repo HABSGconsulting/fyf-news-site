@@ -3,7 +3,8 @@
 {{- $personaLabelsAll := site.Data.persona_labels | default dict }}
 {{- $personaLabels := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 
-{{- $enPages := where site.RegularPages "Section" "news" }}
+{{- /* site.Sites[0] = EN site — always has the full page pool regardless of rendering language */}}
+{{- $enPages := where (index site.Sites 0).RegularPages "Section" "news" }}
 
 {{- $impactPosts := slice }}
 {{- range $enPages }}
@@ -161,7 +162,7 @@
 .fyf-more-link:hover { color: #D97706; }
 .fyf-more-liner { font-size: 0.7rem; color: #9CA3AF; line-height: 1.4; }
 
-/* ── Dark mode: tied to PaperMod's data-theme attribute, not prefers-color-scheme ── */
+/* ── Dark mode ── */
 [data-theme="dark"] .fyf-site-title { color: #E2E8F0; }
 [data-theme="dark"] .fyf-site-sub   { color: #9CA3AF; }
 [data-theme="dark"] .fyf-day-label  { color: #4B5563; border-bottom-color: rgba(255,255,255,0.07); }
