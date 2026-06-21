@@ -41,7 +41,6 @@ menu:
 
 languages:
   en:
-    baseURL: https://news.fundyourfreedom.in/
     languageName: English
     weight: 1
     contentDir: content
@@ -52,7 +51,6 @@ languages:
         Title: "What today's financial news means for your money"
         Content: "Investor-framed analysis of Indian personal finance events, six times a day."
   hi:
-    baseURL: https://news.fundyourfreedom.in/hi/
     languageName: "हिंदी"
     weight: 2
     contentDir: content
