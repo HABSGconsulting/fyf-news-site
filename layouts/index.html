@@ -69,18 +69,12 @@
       {{- $score     := $scoring.editorial_impact_score | default (.Params.editorial_impact_score | default 0) }}
       {{- $cardTitle := cond (and $isHindi (ne (.Params.title_hi | default "") "")) .Params.title_hi .Title }}
 
-      {{- /*
-        Card href logic for Hindi feed:
-        - Old .hi.md files  → link to their own permalink (the /hi/ URL Hugo generates)
-        - New unified files → link to EN permalink + #hi ONLY if who_affected_hi exists,
-          because single.html only emits fpLang() script when $hasHindi (who_affected_hi) is true.
-          If who_affected_hi is absent, just link plain — the EN/हि toggle is still visible on the page.
-      */}}
+      {{- /* For Hindi feed: old .hi.md files link to their own permalink;
+             new unified files link to the EN permalink with #hi hash so
+             single.html auto-switches to Hindi via fpLang('hi') */}}
       {{- $cardHref := .Permalink }}
       {{- if and $isHindi (not (strings.HasSuffix .File.BaseFileName ".hi")) }}
-        {{- if ne (.Params.who_affected_hi | default "") "" }}
-          {{- $cardHref = printf "%s#hi" .Permalink }}
-        {{- end }}
+        {{- $cardHref = printf "%s#hi" .Permalink }}
       {{- end }}
 
       <a class="fyf-card" href="{{ $cardHref }}">
