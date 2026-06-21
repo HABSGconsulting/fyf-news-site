@@ -2,7 +2,6 @@
 {{- $params := .Params }}
 {{- $scoring := $params.scoring | default dict }}
 
-{{- /* Score: Format B has scores nested under .scoring{}; Format A has them flat */}}
 {{- $score            := $scoring.editorial_impact_score | default ($params.editorial_impact_score | default 0) }}
 {{- $reachScore       := $scoring.reach_score        | default ($params.reach_score        | default "–") }}
 {{- $immediacyScore   := $scoring.immediacy_score    | default ($params.immediacy_score    | default "–") }}
@@ -11,23 +10,26 @@
 {{- $actionScore      := $scoring.actionability_score | default ($params.actionability_score | default ($params.source_score | default "–")) }}
 
 {{- $sentiment := $params.sentiment | default "neutral" }}
-
-{{- /* Format B: content_type present ("news"), has who_affected_en field */}}
 {{- $isFormatB := ne ($params.who_affected_en | default "") "" }}
+{{- $isHindi   := eq site.Language.Lang "hi" }}
 
-{{- /* Language: Hugo sets site.Language.Lang = "hi" for .hi.md pages */}}
-{{- $isHindi := eq site.Language.Lang "hi" }}
-
-{{- /* For format B: both EN+HI in same file — use JS toggle */}}
-{{- $whoEn    := $params.who_affected_en    | default "" }}
-{{- $whoHi    := $params.who_affected_hi    | default "" }}
-{{- $whatEn   := $params.what_changes_en    | default "" }}
-{{- $whatHi   := $params.what_changes_hi    | default "" }}
-{{- $doEn     := $params.action_command_en  | default "" }}
-{{- $doHi     := $params.action_command_hi  | default "" }}
+{{- $whoEn  := $params.who_affected_en   | default "" }}
+{{- $whoHi  := $params.who_affected_hi   | default "" }}
+{{- $whatEn := $params.what_changes_en   | default "" }}
+{{- $whatHi := $params.what_changes_hi   | default "" }}
+{{- $doEn   := $params.action_command_en | default "" }}
+{{- $doHi   := $params.action_command_hi | default "" }}
 {{- $hasHindi := ne $whoHi "" }}
 
-{{- /* Language switcher for Format A old posts */}}
+{{- $advTpEn  := $params.advisor_talking_point_en | default "" }}
+{{- $advTpHi  := $params.advisor_talking_point_hi | default "" }}
+{{- $advOppEn := $params.advisor_opportunity_en   | default "" }}
+{{- $advOppHi := $params.advisor_opportunity_hi   | default "" }}
+{{- $hasAdvisor := or (ne $advTpEn "") (ne $advOppEn "") }}
+
+{{- $learnLinks   := $params.learn_links   | default slice }}
+{{- $waCaption    := $params.whatsapp_caption | default "" }}
+
 {{- $langSwitchURL := "" }}
 {{- if not $isFormatB }}
   {{- if $isHindi }}
@@ -41,7 +43,7 @@
 {{- $personaLabels    := cond $isHindi (index $personaLabelsAll "hi" | default dict) $personaLabelsAll }}
 {{- $primaryLabel := "" }}
 {{- if $params.primary_persona }}
-{{- $primaryLabel = index $personaLabels $params.primary_persona | default $params.primary_persona }}
+  {{- $primaryLabel = index $personaLabels $params.primary_persona | default $params.primary_persona }}
 {{- end }}
 
 {{- $sentimentLabelEn := dict "positive" "Positive" "negative" "Negative" "neutral" "Neutral" "watch" "Watch" }}
@@ -50,206 +52,599 @@
 {{- $icon  := index $sentimentIcon $sentiment | default "→" }}
 {{- $label := cond $isHindi (index $sentimentLabelHi $sentiment | default $sentiment) (index $sentimentLabelEn $sentiment | default ($sentiment | title)) }}
 
-<article class="fyf-post{{ if $isHindi }} fyf-hindi{{ end }}" id="fyf-post-root">
+<article class="fp{{ if $isHindi }} fp-hi{{ end }}" id="fp-root">
 
-  <div class="fyf-accent-bar s-{{ $sentiment }}"></div>
+  {{- /* ── Top sentiment stripe ── */}}
+  <div class="fp-stripe s-{{ $sentiment }}"></div>
 
-  <header class="fyf-post-header">
-    <div class="fyf-post-topbar">
+  <div class="fp-inner">
 
-      <span class="fyf-badge s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
+    {{- /* ── Topbar: badges + lang toggle ── */}}
+    <div class="fp-topbar">
+      <span class="fp-badge fp-badge-sentiment s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
 
-      <span class="fyf-badge fyf-badge-score" tabindex="0" aria-describedby="score-tip">
-        <span id="score-label-en">Impact {{ $score }}/10</span>
-        {{- if and $isFormatB $hasHindi }}
-        <span id="score-label-hi" class="fyf-hidden">प्रभाव {{ $score }}/10</span>
-        {{- end }}
-        <span class="fyf-score-tooltip" id="score-tip" role="tooltip">
-          <span class="fyf-score-tooltip-title">
-            <span id="tip-title-en">Impact breakdown</span>
-            {{- if and $isFormatB $hasHindi }}<span id="tip-title-hi" class="fyf-hidden">स्कोर विवरण</span>{{- end }}
+      <span class="fp-badge fp-badge-score" tabindex="0" aria-describedby="fp-score-tip">
+        <span id="fp-score-en">{{ $score }}/10</span>
+        {{- if and $isFormatB $hasHindi }}<span id="fp-score-hi" class="fp-hidden">{{ $score }}/10</span>{{- end }}
+        <span class="fp-tooltip" id="fp-score-tip" role="tooltip">
+          <span class="fp-tooltip-title">
+            <span id="fp-tip-en">Impact score</span>
+            {{- if and $isFormatB $hasHindi }}<span id="fp-tip-hi" class="fp-hidden">प्रभाव स्कोर</span>{{- end }}
           </span>
-          <span class="fyf-score-row"><span>Reach</span><span>{{ $reachScore }}/2</span></span>
-          <span class="fyf-score-row"><span>Immediacy</span><span>{{ $immediacyScore }}/2</span></span>
-          <span class="fyf-score-row"><span>Materiality</span><span>{{ $materialityScore }}/2</span></span>
-          <span class="fyf-score-row"><span>Surprise</span><span>{{ $surpriseScore }}/2</span></span>
-          <span class="fyf-score-row"><span>Actionability</span><span>{{ $actionScore }}/2</span></span>
+          <span class="fp-score-row"><span>Reach</span><span>{{ $reachScore }}/2</span></span>
+          <span class="fp-score-row"><span>Immediacy</span><span>{{ $immediacyScore }}/2</span></span>
+          <span class="fp-score-row"><span>Materiality</span><span>{{ $materialityScore }}/2</span></span>
+          <span class="fp-score-row"><span>Surprise</span><span>{{ $surpriseScore }}/2</span></span>
+          <span class="fp-score-row"><span>Actionability</span><span>{{ $actionScore }}/2</span></span>
         </span>
       </span>
 
       {{- if $primaryLabel }}
-      <span class="fyf-persona-pill">
-        <span class="fyf-persona-for" id="for-label">For</span>
+      <span class="fp-badge fp-badge-persona">
+        <span class="fp-for" id="fp-for">{{ if $isHindi }}के लिए{{ else }}For{{ end }}</span>
         {{ $primaryLabel }}
       </span>
       {{- end }}
 
-      {{- /* Language switcher */}}
       {{- if and $isFormatB $hasHindi }}
-      <div class="fyf-lang-switch">
-        <button class="fyf-lang-btn fyf-lang-active" id="btn-en" onclick="fyfSetLang('en')">🇬🇧 English</button>
-        <button class="fyf-lang-btn" id="btn-hi" onclick="fyfSetLang('hi')">🇮🇳 हिंदी</button>
+      <div class="fp-lang">
+        <button class="fp-lang-btn fp-lang-on" id="fp-btn-en" onclick="fpLang('en')">EN</button>
+        <button class="fp-lang-btn" id="fp-btn-hi" onclick="fpLang('hi')">हि</button>
       </div>
       {{- else if $langSwitchURL }}
-      <div class="fyf-lang-switch">
-        <a href="{{ $langSwitchURL }}" class="fyf-lang-btn">
-          {{ if $isHindi }}🇬🇧 English{{ else }}🇮🇳 हिंदी{{ end }}
-        </a>
+      <div class="fp-lang">
+        <a href="{{ $langSwitchURL }}" class="fp-lang-btn">{{ if $isHindi }}EN{{ else }}हि{{ end }}</a>
       </div>
       {{- end }}
-
     </div>
 
-    {{- /* Title */}}
-    <h1 class="fyf-post-title" id="post-title-en">{{ .Title }}</h1>
+    {{- /* ── Title ── */}}
+    <h1 class="fp-title" id="fp-title-en">{{ .Title }}</h1>
     {{- if and $isFormatB $params.title_hi }}
-    <h1 class="fyf-post-title fyf-hindi fyf-hidden" id="post-title-hi">{{ $params.title_hi }}</h1>
+    <h1 class="fp-title fp-devanagari fp-hidden" id="fp-title-hi">{{ $params.title_hi }}</h1>
     {{- end }}
 
-    <div class="fyf-post-byline">
+    <div class="fp-byline">
       <span>{{ .Date.Format "2 January 2006" }}</span>
-      <span class="fyf-sep">·</span>
+      <span class="fp-dot">·</span>
       <span>{{ .Date.Format "3:04 PM" }} IST</span>
-      {{- if $params.category }}<span class="fyf-sep">·</span><span>{{ $params.category }}</span>{{- end }}
-      {{- if $params.impact_horizon }}<span class="fyf-sep">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
+      {{- if $params.category }}<span class="fp-dot">·</span><span>{{ $params.category }}</span>{{- end }}
+      {{- if $params.impact_horizon }}<span class="fp-dot">·</span><span>{{ $params.impact_horizon }}</span>{{- end }}
     </div>
-  </header>
 
-  <div class="fyf-post-body">
-    {{- if $isFormatB }}
-      {{- /* Format B: structured fields */}}
-      <div id="fyf-body-en">
-        {{- if $whoEn }}
-        <h2>Who is affected</h2>
-        <p>{{ $whoEn }}</p>
+    {{- /* ── Body: structured (Format B) or markdown ── */}}
+    <div class="fp-body">
+      {{- if $isFormatB }}
+
+        <div id="fp-body-en">
+          {{- if $whoEn }}
+          <div class="fp-section">
+            <div class="fp-section-label">Who is affected</div>
+            <p class="fp-section-text">{{ $whoEn }}</p>
+          </div>
+          {{- end }}
+          {{- if $whatEn }}
+          <div class="fp-section">
+            <div class="fp-section-label">What changes</div>
+            <p class="fp-section-text">{{ $whatEn }}</p>
+          </div>
+          {{- end }}
+          {{- if $doEn }}
+          <div class="fp-section fp-action-block">
+            <div class="fp-section-label">{{ "→" }} What you can do</div>
+            <p class="fp-section-text">{{ $doEn }}</p>
+          </div>
+          {{- end }}
+        </div>
+
+        {{- if $hasHindi }}
+        <div id="fp-body-hi" class="fp-devanagari fp-hidden">
+          {{- if $whoHi }}
+          <div class="fp-section">
+            <div class="fp-section-label">कौन प्रभावित होगा</div>
+            <p class="fp-section-text">{{ $whoHi }}</p>
+          </div>
+          {{- end }}
+          {{- if $whatHi }}
+          <div class="fp-section">
+            <div class="fp-section-label">क्या बदलता है</div>
+            <p class="fp-section-text">{{ $whatHi }}</p>
+          </div>
+          {{- end }}
+          {{- if $doHi }}
+          <div class="fp-section fp-action-block">
+            <div class="fp-section-label">→ आप क्या कर सकते हैं</div>
+            <p class="fp-section-text">{{ $doHi }}</p>
+          </div>
+          {{- end }}
+        </div>
         {{- end }}
-        {{- if $whatEn }}
-        <h2>What changes</h2>
-        <p>{{ $whatEn }}</p>
+
+        {{- /* Markdown body if present */}}
+        {{- if .Content }}
+        <div class="fp-markdown">{{ .Content }}</div>
         {{- end }}
-        {{- if $doEn }}
-        <h2>What you can do</h2>
-        <p>{{ $doEn }}</p>
+
+      {{- else }}
+        <div class="fp-markdown">{{ .Content }}</div>
+      {{- end }}
+    </div>
+
+    {{- /* ── Advisor section (collapsed) ── */}}
+    {{- if $hasAdvisor }}
+    <details class="fp-advisor" id="fp-advisor-block">
+      <summary class="fp-advisor-summary">
+        <span id="fp-adv-label-en">For Advisors</span>
+        {{- if $hasHindi }}<span id="fp-adv-label-hi" class="fp-hidden">सलाहकारों के लिए</span>{{- end }}
+        <svg class="fp-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>
+      <div class="fp-advisor-body" id="fp-adv-body-en">
+        {{- if $advTpEn }}
+        <div class="fp-adv-row">
+          <div class="fp-adv-row-label">Talking point</div>
+          <p>{{ $advTpEn }}</p>
+        </div>
+        {{- end }}
+        {{- if $advOppEn }}
+        <div class="fp-adv-row">
+          <div class="fp-adv-row-label">Opportunity</div>
+          <p>{{ $advOppEn }}</p>
+        </div>
         {{- end }}
       </div>
       {{- if $hasHindi }}
-      <div id="fyf-body-hi" class="fyf-hindi fyf-hidden">
-        {{- if $whoHi }}
-        <h2>कौन प्रभावित होगा</h2>
-        <p>{{ $whoHi }}</p>
+      <div class="fp-advisor-body fp-devanagari fp-hidden" id="fp-adv-body-hi">
+        {{- if $advTpHi }}
+        <div class="fp-adv-row">
+          <div class="fp-adv-row-label">बात करने का बिंदु</div>
+          <p>{{ $advTpHi }}</p>
+        </div>
         {{- end }}
-        {{- if $whatHi }}
-        <h2>क्या बदलता है</h2>
-        <p>{{ $whatHi }}</p>
-        {{- end }}
-        {{- if $doHi }}
-        <h2>आप क्या कर सकते हैं</h2>
-        <p>{{ $doHi }}</p>
+        {{- if $advOppHi }}
+        <div class="fp-adv-row">
+          <div class="fp-adv-row-label">अवसर</div>
+          <p>{{ $advOppHi }}</p>
+        </div>
         {{- end }}
       </div>
       {{- end }}
-    {{- else }}
-      {{- /* Format A: body in Markdown file body */}}
-      {{ .Content }}
+    </details>
     {{- end }}
-  </div>
 
-  {{- if $params.source_links }}
-  <div class="fyf-sources">
-    <span class="fyf-sources-label">Sources</span>
-    {{- range $params.source_links }}
-    <a href="{{ .url }}" class="fyf-source-pill" target="_blank" rel="noopener noreferrer">{{ .label }}</a>
+    {{- /* ── Learn More ── */}}
+    {{- if $learnLinks }}
+    <div class="fp-learn">
+      <div class="fp-learn-label" id="fp-learn-label-en">Learn more</div>
+      {{- if $hasHindi }}<div class="fp-learn-label fp-hidden" id="fp-learn-label-hi">और जानें</div>{{- end }}
+      <div class="fp-learn-grid">
+        {{- range $learnLinks }}
+        <a href="https://learn.fundyourfreedom.in/{{ .slug }}" class="fp-learn-card" target="_blank" rel="noopener noreferrer">
+          <span class="fp-learn-title">{{ .title }}</span>
+          {{- if .difficulty }}<span class="fp-learn-diff">{{ .difficulty }}</span>{{- end }}
+          <svg class="fp-learn-arrow" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        {{- end }}
+      </div>
+    </div>
     {{- end }}
-  </div>
-  {{- end }}
 
-  {{- if $params.subject_tags }}
-  <div class="fyf-tags">
-    {{- range $params.subject_tags }}
-    <span class="fyf-tag">#{{ . }}</span>
-    {{- end }}
-  </div>
-  {{- end }}
+    {{- /* ── Footer: sources + share ── */}}
+    <div class="fp-footer">
+      {{- if $params.source_links }}
+      <div class="fp-sources">
+        <span class="fp-footer-label">Sources</span>
+        {{- range $params.source_links }}
+        <a href="{{ .url }}" class="fp-source-link" target="_blank" rel="noopener noreferrer">{{ .label }} ↗</a>
+        {{- end }}
+      </div>
+      {{- end }}
 
+      {{- if $waCaption }}
+      <a class="fp-wa-btn"
+         href="https://api.whatsapp.com/send?text={{ $waCaption | urlquery }}%20{{ .Permalink | urlquery }}"
+         target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.555 4.116 1.528 5.845L0 24l6.335-1.502A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.214-3.724.883.937-3.617-.235-.372A9.818 9.818 0 1112 21.818z"/></svg>
+        Share on WhatsApp
+      </a>
+      {{- end }}
+    </div>
+
+  </div>{{- /* fp-inner */}}
 </article>
 
 {{- if and $isFormatB $hasHindi }}
 <script>
-function fyfSetLang(lang) {
-  var ids = [
-    ['fyf-body-en','fyf-body-hi'],
-    ['post-title-en','post-title-hi'],
-    ['score-label-en','score-label-hi'],
-    ['tip-title-en','tip-title-hi']
+function fpLang(lang) {
+  var isHi = lang === 'hi';
+  var pairs = [
+    ['fp-body-en','fp-body-hi'],
+    ['fp-title-en','fp-title-hi'],
+    ['fp-score-en','fp-score-hi'],
+    ['fp-tip-en','fp-tip-hi'],
+    ['fp-adv-label-en','fp-adv-label-hi'],
+    ['fp-adv-body-en','fp-adv-body-hi'],
+    ['fp-learn-label-en','fp-learn-label-hi']
   ];
-  var root  = document.getElementById('fyf-post-root');
-  var btnEn = document.getElementById('btn-en');
-  var btnHi = document.getElementById('btn-hi');
-  var forLbl = document.getElementById('for-label');
-  var isHi = (lang === 'hi');
-  ids.forEach(function(pair) {
-    var en = document.getElementById(pair[0]);
-    var hi = document.getElementById(pair[1]);
-    if (en) en.classList.toggle('fyf-hidden', isHi);
-    if (hi) hi.classList.toggle('fyf-hidden', !isHi);
+  pairs.forEach(function(p){
+    var a=document.getElementById(p[0]), b=document.getElementById(p[1]);
+    if(a) a.classList.toggle('fp-hidden', isHi);
+    if(b) b.classList.toggle('fp-hidden', !isHi);
   });
-  if (btnEn) btnEn.classList.toggle('fyf-lang-active', !isHi);
-  if (btnHi) btnHi.classList.toggle('fyf-lang-active', isHi);
-  if (root)  root.classList.toggle('fyf-hindi', isHi);
-  if (forLbl) forLbl.textContent = isHi ? 'के लिए' : 'For';
+  var root=document.getElementById('fp-root');
+  var btnEn=document.getElementById('fp-btn-en');
+  var btnHi=document.getElementById('fp-btn-hi');
+  var forEl=document.getElementById('fp-for');
+  if(root)  root.classList.toggle('fp-hi', isHi);
+  if(btnEn) btnEn.classList.toggle('fp-lang-on', !isHi);
+  if(btnHi) btnHi.classList.toggle('fp-lang-on', isHi);
+  if(forEl) forEl.textContent = isHi ? 'के लिए' : 'For';
 }
 </script>
 {{- end }}
 
 <style>
-.fyf-hidden { display: none !important; }
-.fyf-post { max-width: 680px; margin: 0 auto; padding: 0 1rem 4rem; }
-.fyf-accent-bar { height: 4px; width: 100%; margin-bottom: 1.75rem; }
-.fyf-accent-bar.s-positive { background: #059669; }
-.fyf-accent-bar.s-negative { background: #DC2626; }
-.fyf-accent-bar.s-neutral  { background: #94A3B8; }
-.fyf-accent-bar.s-watch    { background: #D97706; }
-.fyf-post-header { margin-bottom: 2rem; }
-.fyf-post-topbar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
-.fyf-badge { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.18rem 0.55rem; border-radius: 99px; background: rgba(22,78,99,0.07); color: #164E63; white-space: nowrap; }
-.fyf-badge.s-positive { color: #059669; background: rgba(5,150,105,0.09); }
-.fyf-badge.s-negative { color: #DC2626; background: rgba(220,38,38,0.09); }
-.fyf-badge.s-neutral  { color: #64748B; background: rgba(100,116,139,0.09); }
-.fyf-badge.s-watch    { color: #D97706; background: rgba(217,119,6,0.09); }
-.fyf-badge-score { position: relative; color: #6B7280; background: rgba(22,78,99,0.05); cursor: default; }
-.fyf-badge-score:hover .fyf-score-tooltip, .fyf-badge-score:focus .fyf-score-tooltip { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
-.fyf-score-tooltip { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(-4px); opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; z-index: 100; min-width: 180px; background: #164E63; color: #fff; border-radius: 6px; padding: 0.6rem 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.18); display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.68rem; font-weight: 400; text-transform: none; letter-spacing: 0; }
-.fyf-score-tooltip::before { content: ""; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: #164E63; }
-.fyf-score-tooltip-title { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin-bottom: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 0.25rem; }
-.fyf-score-row { display: flex; justify-content: space-between; gap: 1rem; font-variant-numeric: tabular-nums; }
-.fyf-score-row span:last-child { font-weight: 700; }
-.fyf-persona-pill { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.63rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 99px; background: rgba(22,78,99,0.08); color: #164E63; border: 1px solid rgba(22,78,99,0.15); white-space: nowrap; }
-.fyf-persona-for { font-weight: 400; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.58rem; }
-.fyf-lang-switch { margin-left: auto; display: flex; gap: 0.3rem; }
-.fyf-lang-btn { font-size: 0.7rem; font-weight: 600; padding: 0.22rem 0.7rem; border-radius: 6px; border: 1px solid rgba(22,78,99,0.15); color: #164E63; text-decoration: none; background: rgba(22,78,99,0.05); transition: background 0.15s, color 0.15s; white-space: nowrap; cursor: pointer; font-family: inherit; }
-.fyf-lang-btn:hover { background: #164E63; color: #fff; text-decoration: none; }
-.fyf-lang-active { background: #164E63 !important; color: #fff !important; }
-.fyf-post-title { font-family: 'Source Serif 4', Georgia, serif; font-size: clamp(1.45rem,3vw,2.1rem); font-weight: 300; line-height: 1.3; color: #164E63; margin: 0 0 0.6rem; }
-.fyf-hindi .fyf-post-title, .fyf-post-title.fyf-hindi { font-family: 'Yatra One', serif; font-weight: 400; font-size: clamp(1.3rem,2.8vw,1.9rem); line-height: 1.4; }
-.fyf-post-byline { font-size: 0.72rem; color: #6B7280; display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem; font-variant-numeric: tabular-nums; text-transform: capitalize; }
-.fyf-sep { opacity: 0.35; }
-.fyf-post-body { margin-top: 2rem; }
-.fyf-post-body h2 { font-family: 'Inter', sans-serif; font-size: 0.63rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #164E63; margin: 1.75rem 0 0.45rem; padding-bottom: 0.3rem; border-bottom: 1px solid rgba(22,78,99,0.12); }
-.fyf-post-body p { font-size: 1.12rem; line-height: 1.85; color: #374151; margin: 0 0 0.75rem; }
-.fyf-hindi .fyf-post-body h2 { font-family: 'Yatra One', serif; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 1.05rem; }
-.fyf-hindi .fyf-post-body p { font-family: 'Tiro Devanagari Hindi', serif; font-size: 1.12rem; line-height: 2.1; }
-.fyf-sources { margin-top: 2rem; padding-top: 0.9rem; border-top: 1px solid rgba(22,78,99,0.12); display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
-.fyf-sources-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6B7280; margin-right: 0.2rem; }
-.fyf-source-pill { font-size: 0.7rem; color: #164E63; text-decoration: none; background: rgba(22,78,99,0.06); border: 1px solid rgba(22,78,99,0.15); padding: 0.18rem 0.6rem; border-radius: 4px; transition: background 0.15s; }
-.fyf-source-pill:hover { background: rgba(22,78,99,0.12); text-decoration: none; }
-.fyf-tags { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.fyf-tag { font-size: 0.61rem; font-weight: 500; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(217,119,6,0.08); color: #D97706; }
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;1,300&family=Noto+Sans+Devanagari:wght@400;500&display=swap');
+
+.fp-hidden { display: none !important; }
+
+/* ── Container ── */
+.fp { max-width: 680px; margin: 0 auto; padding-bottom: 5rem; }
+.fp-inner { padding: 0 1rem; }
+
+/* ── Sentiment stripe ── */
+.fp-stripe { height: 3px; margin-bottom: 2rem; }
+.fp-stripe.s-positive { background: #059669; }
+.fp-stripe.s-negative { background: #DC2626; }
+.fp-stripe.s-neutral  { background: #94A3B8; }
+.fp-stripe.s-watch    { background: #D97706; }
+
+/* ── Topbar ── */
+.fp-topbar { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+
+.fp-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.fp-badge-sentiment.s-positive { color: #059669; background: rgba(5,150,105,0.1); }
+.fp-badge-sentiment.s-negative { color: #DC2626; background: rgba(220,38,38,0.1); }
+.fp-badge-sentiment.s-neutral  { color: #64748B; background: rgba(100,116,139,0.1); }
+.fp-badge-sentiment.s-watch    { color: #D97706; background: rgba(217,119,6,0.1); }
+
+.fp-badge-score {
+  position: relative;
+  color: #6B7280;
+  background: rgba(0,0,0,0.05);
+  cursor: default;
+  font-weight: 600;
+}
+.fp-badge-score:hover .fp-tooltip,
+.fp-badge-score:focus .fp-tooltip { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+.fp-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 200;
+  min-width: 190px;
+  background: #1C3A4A;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.fp-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: #1C3A4A;
+}
+.fp-tooltip-title {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.55;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 0.1rem;
+}
+.fp-score-row { display: flex; justify-content: space-between; gap: 1.5rem; font-variant-numeric: tabular-nums; }
+.fp-score-row span:last-child { font-weight: 700; }
+
+.fp-badge-persona {
+  color: #1C3A4A;
+  background: rgba(28,58,74,0.07);
+  border: 1px solid rgba(28,58,74,0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.fp-for { font-weight: 400; opacity: 0.5; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ── Language toggle ── */
+.fp-lang { margin-left: auto; display: flex; gap: 0; border: 1px solid rgba(28,58,74,0.15); border-radius: 6px; overflow: hidden; }
+.fp-lang-btn {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  color: #1C3A4A;
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.6;
+}
+.fp-lang-btn + .fp-lang-btn { border-left: 1px solid rgba(28,58,74,0.15); }
+.fp-lang-btn:hover { background: rgba(28,58,74,0.07); text-decoration: none; }
+.fp-lang-on { background: #1C3A4A !important; color: #fff !important; }
+
+/* ── Title ── */
+.fp-title {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.28;
+  color: #1C3A4A;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+.fp-hi .fp-title,
+.fp-title.fp-devanagari {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* ── Byline ── */
+.fp-byline {
+  font-size: 0.72rem;
+  color: #9CA3AF;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 2rem;
+}
+.fp-dot { opacity: 0.4; }
+
+/* ── Body sections ── */
+.fp-body { display: flex; flex-direction: column; gap: 0; }
+
+.fp-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.fp-section:first-child { border-top: 1px solid rgba(0,0,0,0.06); }
+
+.fp-section-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9CA3AF;
+  margin-bottom: 0.5rem;
+}
+.fp-section-text {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #374151;
+  margin: 0;
+}
+.fp-hi .fp-section-text {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+/* Action block — highlighted */
+.fp-action-block {
+  background: rgba(28,58,74,0.03);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
+  border-left: 3px solid #1C3A4A;
+  border-bottom: none;
+  margin-top: 0.25rem;
+}
+.fp-action-block .fp-section-label { color: #1C3A4A; }
+.fp-action-block .fp-section-text { color: #1C3A4A; font-weight: 400; }
+
+/* Markdown body */
+.fp-markdown { margin-top: 1.5rem; }
+.fp-markdown h2 { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin: 2rem 0 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.4rem; }
+.fp-markdown p { font-family: 'Source Serif 4', Georgia, serif; font-size: 1.05rem; line-height: 1.8; color: #374151; margin: 0 0 1rem; }
+.fp-markdown a { color: #1C3A4A; }
+
+/* ── Advisor block ── */
+.fp-advisor {
+  margin-top: 2rem;
+  border: 1px solid rgba(217,119,6,0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fp-advisor-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #92400E;
+  background: rgba(217,119,6,0.05);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.fp-advisor-summary::-webkit-details-marker { display: none; }
+.fp-advisor-summary:hover { background: rgba(217,119,6,0.08); }
+.fp-chevron { width: 14px; height: 14px; margin-left: auto; color: #D97706; transition: transform 0.2s; }
+.fp-advisor[open] .fp-chevron { transform: rotate(180deg); }
+
+.fp-advisor-body { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+.fp-adv-row-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #D97706;
+  margin-bottom: 0.3rem;
+}
+.fp-advisor-body p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+}
+.fp-hi .fp-advisor-body p {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.9;
+}
+
+/* ── Learn More ── */
+.fp-learn { margin-top: 2rem; }
+.fp-learn-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9CA3AF;
+  margin-bottom: 0.65rem;
+}
+.fp-learn-grid { display: flex; flex-direction: column; gap: 0.4rem; }
+.fp-learn-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(28,58,74,0.03);
+  border: 1px solid rgba(28,58,74,0.1);
+  border-radius: 6px;
+  text-decoration: none;
+  color: #1C3A4A;
+  transition: background 0.15s, border-color 0.15s;
+}
+.fp-learn-card:hover {
+  background: rgba(28,58,74,0.07);
+  border-color: rgba(28,58,74,0.2);
+  text-decoration: none;
+}
+.fp-learn-title { font-size: 0.88rem; font-weight: 500; flex: 1; line-height: 1.4; }
+.fp-learn-diff {
+  font-size: 0.58rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #9CA3AF;
+  background: rgba(0,0,0,0.04);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.fp-learn-arrow { width: 14px; height: 14px; flex-shrink: 0; color: #9CA3AF; }
+.fp-learn-card:hover .fp-learn-arrow { color: #1C3A4A; }
+
+/* ── Footer ── */
+.fp-footer {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.fp-sources { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+.fp-footer-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; }
+.fp-source-link {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #1C3A4A;
+  text-decoration: none;
+  padding: 0.2rem 0.55rem;
+  background: rgba(28,58,74,0.05);
+  border: 1px solid rgba(28,58,74,0.12);
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.fp-source-link:hover { background: rgba(28,58,74,0.1); text-decoration: none; }
+
+.fp-wa-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #fff;
+  background: #25D366;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.fp-wa-btn:hover { background: #1ebe5c; text-decoration: none; }
+
+/* ── Dark mode (PaperMod data-theme) ── */
+[data-theme="dark"] .fp-stripe.s-neutral { background: #64748B; }
+[data-theme="dark"] .fp-title { color: #E2E8F0; }
+[data-theme="dark"] .fp-section { border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .fp-section:first-child { border-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .fp-section-text { color: #CBD5E1; }
+[data-theme="dark"] .fp-action-block { background: rgba(255,255,255,0.04); border-left-color: #4F98A3; }
+[data-theme="dark"] .fp-action-block .fp-section-label,
+[data-theme="dark"] .fp-action-block .fp-section-text { color: #E2E8F0; }
+[data-theme="dark"] .fp-badge-persona { color: #94C5CC; background: rgba(79,152,163,0.12); border-color: rgba(79,152,163,0.2); }
+[data-theme="dark"] .fp-lang { border-color: rgba(255,255,255,0.12); }
+[data-theme="dark"] .fp-lang-btn { color: #CBD5E1; }
+[data-theme="dark"] .fp-lang-btn + .fp-lang-btn { border-color: rgba(255,255,255,0.12); }
+[data-theme="dark"] .fp-lang-on { background: #4F98A3 !important; color: #fff !important; }
+[data-theme="dark"] .fp-advisor { border-color: rgba(217,119,6,0.25); }
+[data-theme="dark"] .fp-advisor-summary { background: rgba(217,119,6,0.08); }
+[data-theme="dark"] .fp-advisor-body p { color: #CBD5E1; }
+[data-theme="dark"] .fp-learn-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); color: #CBD5E1; }
+[data-theme="dark"] .fp-learn-card:hover { background: rgba(255,255,255,0.06); }
+[data-theme="dark"] .fp-learn-title { color: #E2E8F0; }
+[data-theme="dark"] .fp-footer { border-top-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .fp-source-link { color: #94C5CC; background: rgba(79,152,163,0.08); border-color: rgba(79,152,163,0.15); }
+[data-theme="dark"] .fp-markdown p { color: #CBD5E1; }
+[data-theme="dark"] .fp-tooltip { background: #0F2A38; }
+[data-theme="dark"] .fp-tooltip::before { border-bottom-color: #0F2A38; }
+
 @media (max-width: 600px) {
-  .fyf-post-title { font-size: 1.3rem; }
-  .fyf-post-body p { font-size: 1rem; }
-  .fyf-score-tooltip { left: 0; transform: translateY(-4px); }
-  .fyf-badge-score:hover .fyf-score-tooltip, .fyf-badge-score:focus .fyf-score-tooltip { transform: translateY(0); }
-  .fyf-score-tooltip::before { left: 30px; }
+  .fp-title { font-size: 1.35rem; }
+  .fp-section-text { font-size: 0.98rem; }
+  .fp-tooltip { left: 0; transform: translateY(-6px); }
+  .fp-badge-score:hover .fp-tooltip,
+  .fp-badge-score:focus .fp-tooltip { transform: translateY(0); }
+  .fp-tooltip::before { left: 28px; }
+  .fp-wa-btn { margin-left: 0; }
 }
 </style>
 {{- end }}
