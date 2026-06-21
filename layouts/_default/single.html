@@ -62,12 +62,13 @@
       <span class="fp-badge fp-badge-sentiment s-{{ $sentiment }}">{{ $icon }} {{ $label }}</span>
 
       <span class="fp-badge fp-badge-score" tabindex="0" aria-describedby="fp-score-tip">
-        <span id="fp-score-en">{{ $score }}/10</span>
-        {{- if and $isFormatB $hasHindi }}<span id="fp-score-hi" class="fp-hidden">{{ $score }}/10</span>{{- end }}
+        {{- /* show the score span for whichever language is active by default */}}
+        <span id="fp-score-en"{{ if and $isFormatB $hasHindi $isHindi }} class="fp-hidden"{{ end }}>{{ $score }}/10</span>
+        {{- if and $isFormatB $hasHindi }}<span id="fp-score-hi"{{ if not $isHindi }} class="fp-hidden"{{ end }}>{{ $score }}/10</span>{{- end }}
         <span class="fp-tooltip" id="fp-score-tip" role="tooltip">
           <span class="fp-tooltip-title">
-            <span id="fp-tip-en">Impact score</span>
-            {{- if and $isFormatB $hasHindi }}<span id="fp-tip-hi" class="fp-hidden">प्रभाव स्कोर</span>{{- end }}
+            <span id="fp-tip-en"{{ if and $isFormatB $hasHindi $isHindi }} class="fp-hidden"{{ end }}>प्रभाव स्कोर</span>
+            {{- if and $isFormatB $hasHindi }}<span id="fp-tip-hi"{{ if not $isHindi }} class="fp-hidden"{{ end }}>प्रभाव स्कोर</span>{{- end }}
           </span>
           <span class="fp-score-row"><span>Reach</span><span>{{ $reachScore }}/2</span></span>
           <span class="fp-score-row"><span>Immediacy</span><span>{{ $immediacyScore }}/2</span></span>
@@ -86,8 +87,8 @@
 
       {{- if and $isFormatB $hasHindi }}
       <div class="fp-lang">
-        <button class="fp-lang-btn fp-lang-on" id="fp-btn-en" onclick="fpLang('en')">EN</button>
-        <button class="fp-lang-btn" id="fp-btn-hi" onclick="fpLang('hi')">हि</button>
+        <button class="fp-lang-btn{{ if not $isHindi }} fp-lang-on{{ end }}" id="fp-btn-en" onclick="fpLang('en')">EN</button>
+        <button class="fp-lang-btn{{ if $isHindi }} fp-lang-on{{ end }}" id="fp-btn-hi" onclick="fpLang('hi')">हि</button>
       </div>
       {{- else if $langSwitchURL }}
       <div class="fp-lang">
@@ -96,9 +97,9 @@
       {{- end }}
     </div>
 
-    <h1 class="fp-title" id="fp-title-en">{{ .Title }}</h1>
+    <h1 class="fp-title" id="fp-title-en"{{ if and $isFormatB $params.title_hi $isHindi }} style="display:none"{{ end }}>{{ .Title }}</h1>
     {{- if and $isFormatB $params.title_hi }}
-    <h1 class="fp-title fp-devanagari fp-hidden" id="fp-title-hi">{{ $params.title_hi }}</h1>
+    <h1 class="fp-title fp-devanagari{{ if not $isHindi }} fp-hidden{{ end }}" id="fp-title-hi">{{ $params.title_hi }}</h1>
     {{- end }}
 
     <div class="fp-byline">
@@ -112,7 +113,7 @@
     <div class="fp-body">
       {{- if $isFormatB }}
 
-        <div id="fp-body-en">
+        <div id="fp-body-en"{{ if $isHindi }} class="fp-hidden"{{ end }}>
           {{- if $whoEn }}
           <div class="fp-section">
             <div class="fp-section-label">Who is affected</div>
@@ -134,7 +135,7 @@
         </div>
 
         {{- if $hasHindi }}
-        <div id="fp-body-hi" class="fp-devanagari fp-hidden">
+        <div id="fp-body-hi" class="fp-devanagari{{ if not $isHindi }} fp-hidden{{ end }}">
           {{- if $whoHi }}
           <div class="fp-section">
             <div class="fp-section-label">कौन प्रभावित होगा</div>
@@ -168,11 +169,11 @@
     {{- if $hasAdvisor }}
     <details class="fp-advisor" id="fp-advisor-block">
       <summary class="fp-advisor-summary">
-        <span id="fp-adv-label-en">For Advisors</span>
-        {{- if $hasHindi }}<span id="fp-adv-label-hi" class="fp-hidden">सलाहकारों के लिए</span>{{- end }}
+        <span id="fp-adv-label-en"{{ if and $hasHindi $isHindi }} class="fp-hidden"{{ end }}>For Advisors</span>
+        {{- if $hasHindi }}<span id="fp-adv-label-hi"{{ if not $isHindi }} class="fp-hidden"{{ end }}>सलाहकारों के लिए</span>{{- end }}
         <svg class="fp-chevron" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </summary>
-      <div class="fp-advisor-body" id="fp-adv-body-en">
+      <div class="fp-advisor-body" id="fp-adv-body-en"{{ if and $hasHindi $isHindi }} style="display:none"{{ end }}>
         {{- if $advTpEn }}
         <div class="fp-adv-row">
           <div class="fp-adv-row-label">Talking point</div>
@@ -187,7 +188,7 @@
         {{- end }}
       </div>
       {{- if $hasHindi }}
-      <div class="fp-advisor-body fp-devanagari fp-hidden" id="fp-adv-body-hi">
+      <div class="fp-advisor-body fp-devanagari{{ if not $isHindi }} fp-hidden{{ end }}" id="fp-adv-body-hi">
         {{- if $advTpHi }}
         <div class="fp-adv-row">
           <div class="fp-adv-row-label">बात करने का बिंदु</div>
@@ -207,8 +208,8 @@
 
     {{- if $learnLinks }}
     <div class="fp-learn">
-      <div class="fp-learn-label" id="fp-learn-label-en">Learn more</div>
-      {{- if $hasHindi }}<div class="fp-learn-label fp-hidden" id="fp-learn-label-hi">और जानें</div>{{- end }}
+      <div class="fp-learn-label" id="fp-learn-label-en"{{ if and $hasHindi $isHindi }} class="fp-hidden"{{ end }}>Learn more</div>
+      {{- if $hasHindi }}<div class="fp-learn-label{{ if not $isHindi }} fp-hidden{{ end }}" id="fp-learn-label-hi">और जानें</div>{{- end }}
       <div class="fp-learn-grid">
         {{- range $learnLinks }}
         <a href="https://learn.fundyourfreedom.in/{{ .slug }}" class="fp-learn-card" target="_blank" rel="noopener noreferrer">
@@ -271,12 +272,6 @@ function fpLang(lang) {
   if(btnHi) btnHi.classList.toggle('fp-lang-on', isHi);
   if(forEl) forEl.textContent = isHi ? 'के लिए' : 'For';
 }
-// Auto-switch to Hindi if page was opened with #hi hash
-(function(){
-  if (window.location.hash === '#hi') {
-    fpLang('hi');
-  }
-})();
 </script>
 {{- end }}
 
