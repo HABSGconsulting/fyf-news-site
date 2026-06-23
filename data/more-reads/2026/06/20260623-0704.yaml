@@ -1,0 +1,13 @@
+items:
+  - title: "Global Market Today: Asian stocks dip at open as oil edges higher"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/global-market-today-asian-stocks-dip-at-open-as-oil-edges-higher/articleshow/131922714.cms"
+    one_liner: "Asian markets opened lower as oil prices inched up, with investors closely monitoring US-Iran peace talks. Despite posit"
+    category: "macro"
+  - title: "SpaceX falls for third day, erases $600 billion in market value"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/spacex-falls-for-third-day-erases-600-billion-in-market-value/articleshow/131922678.cms"
+    one_liner: "SpaceX shares have seen a significant drop, losing hundreds of billions in value over three days. This decline follows t"
+    category: "macro"
+  - title: "Oil gains after selloff, awaits progress on Strait of Hormuz flows"
+    url: "https://economictimes.indiatimes.com/markets/commodities/news/oil-gains-after-selloff-awaits-progress-on-strait-of-hormuz-flows/articleshow/131922600.cms"
+    one_liner: "Oil prices saw a slight rebound Tuesday, recovering from Monday's sharp decline. This uptick follows tempered optimism s"
+    category: "macro"
