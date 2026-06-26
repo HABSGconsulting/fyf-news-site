@@ -1,0 +1,13 @@
+items:
+  - title: "South Korean stocks in tailspin as Kospi crashes 8%, head for worst week since March"
+    url: "https://economictimes.indiatimes.com/markets/stocks/news/south-koreas-kospi-plunges-more-than-8-as-chipmakers-slide-trading-halted/articleshow/132006456.cms"
+    one_liner: "South Korean stocks experienced a dramatic plunge, exceeding 8% and triggering a trading halt. This sharp decline was pr"
+    category: "macro"
+  - title: "Global Market: US weekly jobless claims drop more than expected"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/us-weekly-jobless-claims-drop-more-than-expected/articleshow/132005843.cms"
+    one_liner: "US unemployment claims saw a sharper-than-expected drop last week, signaling continued labor market strength. Despite th"
+    category: "macro"
+  - title: "Global Market: US revises 2026 first-quarter GDP growth up to 2.1%"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/us-revises-2026-first-quarter-gdp-growth-up-to-2-1/articleshow/132005799.cms"
+    one_liner: "The US economy showed stronger growth than initially thought in the first quarter, reaching an annual rate of 2.1 percen"
+    category: "macro"
