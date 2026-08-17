@@ -1,0 +1,13 @@
+items:
+  - title: "US stocks: US market slips as oil prices rise, retail results awaited"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/us-stocks-us-market-slips-as-oil-prices-rise-retail-results-awaited/articleshow/133306298.cms"
+    one_liner: "As investors braced for retail earnings reports, major stock indexes fell, signaling caution in the market. Oil prices s"
+    category: "macro"
+  - title: "Gold rises as weaker dollar, fading Fed hike bets lift demand"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/gold-rises-as-weaker-dollar-fading-fed-hike-bets-lift-demand/articleshow/133304905.cms"
+    one_liner: "Gold prices advanced Monday, supported by a weaker dollar and fewer rate hike expectations.  Investors are monitoring Mi"
+    category: "macro"
+  - title: "Copper hits over six-month high as LME supply concerns mount"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/wall-street-guide/copper-hits-over-six-month-high-as-lme-supply-concerns-mount/articleshow/133301659.cms"
+    one_liner: "Copper prices reached their highest level in over six months on Monday. This surge occurred as London Metal Exchange inv"
+    category: "macro"
