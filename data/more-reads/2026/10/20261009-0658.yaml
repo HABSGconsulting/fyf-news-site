@@ -1,0 +1,13 @@
+items:
+  - title: "Global Market Today: Asian stocks drop on tech jitters, oil edges lower"
+    url: "https://economictimes.indiatimes.com/markets/us-stocks/news/global-market-today-asian-stocks-drop-on-tech-jitters-oil-edges-lower/articleshow/134803253.cms"
+    one_liner: "The MSCI Asia Pacific equities index edged 0.1% lower early Friday. Japan’s Nikkei fell over 1%, with Softbank Group Cor"
+    category: "macro"
+  - title: "Stocks in news: TCS, ITC, Infosys, Cochin Shipyard and RIL"
+    url: "https://economictimes.indiatimes.com/markets/stocks/news/stocks-in-news-tcs-itc-infosys-cochin-shipyard-and-ril/articleshow/134798204.cms"
+    one_liner: "On Thursday, the financial markets took a hit, plummeting by almost 1.5% due to robust selling pressure. The Nifty index"
+    category: "macro"
+  - title: "Pre-market action: Here's the trade setup for today's session"
+    url: "https://economictimes.indiatimes.com/markets/stocks/news/pre-market-action-heres-the-trade-setup-for-todays-session/articleshow/134797262.cms"
+    one_liner: "Benchmark indices encountered significant pressure as both US bond yields and crude oil prices climbed above $104 per ba"
+    category: "macro"
